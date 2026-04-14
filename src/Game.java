@@ -5,6 +5,7 @@ public class Game {
     private Map<String, Room> rooms;
     private Player player;
     private CommandParser commandParser;
+    // test
 
     public Game() {
         RoomLoader roomLoader = new RoomLoader();
