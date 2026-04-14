@@ -5,7 +5,7 @@ public class Game {
     private Map<String, Room> rooms;
     private Player player;
     private CommandParser commandParser;
-    // test
+    
 
     public Game() {
         RoomLoader roomLoader = new RoomLoader();
@@ -19,6 +19,7 @@ public class Game {
         System.out.println("Welcome to the Text Adventure Game!");
         Room currentRoom = rooms.get(player.getCurrentRoomId());
         System.out.println(currentRoom.getLongDescription());
+        //hello
 
         while (true) {
             
