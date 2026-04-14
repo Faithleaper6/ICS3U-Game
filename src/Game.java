@@ -20,6 +20,7 @@ public class Game {
         Room currentRoom = rooms.get(player.getCurrentRoomId());
         System.out.println(currentRoom.getLongDescription());
         //hello
+        //hello2
 
         while (true) {
             
