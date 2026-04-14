@@ -10,6 +10,11 @@
           "id": "key1",
           "name": "Key",
           "description": "A small rusty key."
+        },
+        {
+          "id": "pencil",
+          "name": "Pencil",
+          "description": "A dull yellow pencil with a broken eraser."
         }
       ]
     },
