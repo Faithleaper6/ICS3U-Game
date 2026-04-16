@@ -19,8 +19,7 @@ public class Game {
         System.out.println("Welcome to the Text Adventure Game!");
         Room currentRoom = rooms.get(player.getCurrentRoomId());
         System.out.println(currentRoom.getLongDescription());
-        //hello
-        //hello2
+        
 
         while (true) {
             
