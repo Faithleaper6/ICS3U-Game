@@ -24,15 +24,44 @@ public class Weapon {
         this.fullAuto = fullAuto;
     }
 
-    public String getId() {
-        return id;
-    }
-
     public String getName() {
         return name;
     }
 
-    public String getDescription() {
-        return description;
+    public String getType() {
+        return type;
     }
+
+    public double getHitChance() {
+        return hitChance;
+    }
+
+    public double getHeadshotChance() {
+        return headshotChance;
+    }
+
+    public int getDamage() {
+        return damage;
+    }
+
+    public int getHeadshotDamage() {
+        return headshotDamage;
+    }
+
+    public int getMagSize() {
+        return magSize;
+    }
+
+    public int getCurrentAmmo() {
+        return currentAmmo;
+    }
+
+    public int getReserveMags() {
+        return reserveMags;
+    }
+
+    public boolean isFullAuto() {
+        return fullAuto;
+    }
+
 }
