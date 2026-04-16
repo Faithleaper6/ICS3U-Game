@@ -8,17 +8,15 @@ public class Game {
     private int numEnemies;
     private int numAllies;
     private int choice;
+    private String playerName;
 
-    public Game(int numEnemies, int numAllies, int choice, Scanner scanner) {
+    public Game(int numEnemies, int numAllies, int choice, String name) {
         this.numEnemies = numEnemies;
         this.numAllies = numAllies;
         this.choice = choice;
+        this.playerName = name;
 
-        RoomLoader loader = new RoomLoader();
-        rooms = loader.loadRooms();
-
-        player = new Player("Player", 100, 100, 100);
-        player.setCurrentRoomId("room1");
+        player = new Player(playerName, 100, 100, 100);
 
         commandParser = new CommandParser();
     }
