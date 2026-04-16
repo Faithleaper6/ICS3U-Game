@@ -18,6 +18,7 @@ public class Player {
     private int grenades;
     private int kills;
     private int level;
+    private int medkit;
 
     
     private double lootBonusPerLevel;    
