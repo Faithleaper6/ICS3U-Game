@@ -1,7 +1,7 @@
 import java.util.Map;
 
 public class CommandParser {
-    public void parse(String input, Player player, Map<String, Room> rooms) {
+    public void parse(String input, Player player, Map<String, Gear> rooms) {
         String[] words = input.trim().toLowerCase().split("\\s+");
         if (words.length == 0) {
             System.out.println("Please enter a command.");
@@ -16,7 +16,7 @@ public class CommandParser {
                     System.out.println("Go where?");
                 } else {
                     String direction = words[1];
-                    Room currentRoom = rooms.get(player.getCurrentRoomId());
+                    Gear currentRoom = rooms.get(player.getCurrentRoomId());
                     String nextRoomId = currentRoom.getExits().get(direction);
                     if (nextRoomId != null) {
                         player.setCurrentRoomId(nextRoomId);
@@ -30,7 +30,7 @@ public class CommandParser {
                 }
                 break;
             case "look":
-                Room currentRoom = rooms.get(player.getCurrentRoomId());
+                Gear currentRoom = rooms.get(player.getCurrentRoomId());
                 System.out.println(currentRoom.getLongDescription());
                 break;
             case "inventory":
@@ -38,7 +38,7 @@ public class CommandParser {
                     System.out.println("Your inventory is empty.");
                 } else {
                     System.out.println("You are carrying:");
-                    for (Item item : player.getInventory()) {
+                    for (Weapon item : player.getInventory()) {
                         System.out.println("- " + item.getName());
                     }
                 }
@@ -48,9 +48,9 @@ public class CommandParser {
                     System.out.println("Take what?");
                 } else {
                     String itemName = words[1];
-                    Room room = rooms.get(player.getCurrentRoomId());
-                    Item itemToTake = null;
-                    for (Item item : room.getItems()) {
+                    Gear room = rooms.get(player.getCurrentRoomId());
+                    Weapon itemToTake = null;
+                    for (Weapon item : room.getItems()) {
                         if (item.getName().equalsIgnoreCase(itemName)) {
                             itemToTake = item;
                             break;
@@ -70,8 +70,8 @@ public class CommandParser {
                     System.out.println("Drop what?");
                 } else {
                     String itemName = words[1];
-                    Item itemToDrop = null;
-                    for (Item item : player.getInventory()) {
+                    Weapon itemToDrop = null;
+                    for (Weapon item : player.getInventory()) {
                         if (item.getName().equalsIgnoreCase(itemName)) {
                             itemToDrop = item;
                             break;
@@ -79,7 +79,7 @@ public class CommandParser {
                     }
                     if (itemToDrop != null) {
                         player.removeItem(itemToDrop);
-                        Room room = rooms.get(player.getCurrentRoomId());
+                        Gear room = rooms.get(player.getCurrentRoomId());
                         room.addItem(itemToDrop);
                         System.out.println("You drop the " + itemToDrop.getName() + ".");
                     } else {
@@ -88,7 +88,8 @@ public class CommandParser {
                 }
                 break;
             case "help":
-                System.out.println("Available commands: go [direction], look, take [item], drop [item], inventory, help");
+                System.out
+                        .println("Available commands: go [direction], look, take [item], drop [item], inventory, help");
                 break;
             default:
                 System.out.println("I don't understand that command.");

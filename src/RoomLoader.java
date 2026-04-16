@@ -3,8 +3,8 @@ import java.util.*;
 import com.google.gson.*;
 
 public class RoomLoader {
-    public Map<String, Room> loadRooms(String filePath) {
-        Map<String, Room> rooms = new HashMap<>();
+    public Map<String, Gear> loadRooms(String filePath) {
+        Map<String, Gear> rooms = new HashMap<>();
         try {
             Gson gson = new Gson();
             JsonObject jsonObject = gson.fromJson(new FileReader(filePath), JsonObject.class);
@@ -22,17 +22,17 @@ public class RoomLoader {
                     exits.put(exit.getKey(), exit.getValue().getAsString());
                 }
 
-                List<Item> items = new ArrayList<>();
+                List<Weapon> items = new ArrayList<>();
                 JsonArray itemsJson = roomData.getAsJsonArray("items");
                 for (JsonElement itemElement : itemsJson) {
                     JsonObject itemObj = itemElement.getAsJsonObject();
                     String itemId = itemObj.get("id").getAsString();
                     String itemName = itemObj.get("name").getAsString();
                     String itemDescription = itemObj.get("description").getAsString();
-                    items.add(new Item(itemId, itemName, itemDescription));
+                    items.add(new Weapon(itemId, itemName, itemDescription));
                 }
 
-                Room room = new Room(roomId, name, description, exits, items);
+                Gear room = new Gear(roomId, name, description, exits, items);
                 rooms.put(roomId, room);
             }
         } catch (Exception e) {
