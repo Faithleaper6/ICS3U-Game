@@ -10,9 +10,16 @@ public class Game {
     private int choice;
 
     public Game(int numEnemies, int numAllies, int choice, Scanner scanner) {
-        RoomLoader roomLoader = new RoomLoader();
-        rooms = roomLoader.loadRooms("rooms.json");
-        player = new Player("entrance");
+        this.numEnemies = numEnemies;
+        this.numAllies = numAllies;
+        this.choice = choice;
+
+        RoomLoader loader = new RoomLoader();
+        rooms = loader.loadRooms();
+
+        player = new Player("Player", 100, 100, 100);
+        player.setCurrentRoomId("room1");
+
         commandParser = new CommandParser();
     }
 
