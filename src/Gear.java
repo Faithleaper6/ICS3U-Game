@@ -8,7 +8,7 @@ public class Gear {
     private Map<String, String> exits; // direction → roomId
     private List<Weapon> items;
 
-    public Gear(String id, String name, String description, Map<String, String> exits, List<Weapon> items) {
+    public Gear(String id, String name, String description) {
         this.id = id;
         this.name = name;
         this.description = description;
