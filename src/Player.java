@@ -23,4 +23,4 @@ public class Player {
     private double lootBonusPerLevel;     // 0.02-0.05
     private double accuracyBonusPerLevel; 
 
-   
+}
