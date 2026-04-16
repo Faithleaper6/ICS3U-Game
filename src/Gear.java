@@ -28,21 +28,7 @@ public class Gear {
         return description;
     }
 
-    public Map<String, String> getExits() {
-        return exits;
-    }
-
-    public List<Weapon> getItems() {
-        return items;
-    }
-
-    public void removeItem(Weapon item) {
-        items.remove(item);
-    }
-
-    public void addItem(Weapon item) {
-        items.add(item);
-    }
+    
 
     public String getLongDescription() {
         StringBuilder sb = new StringBuilder();
