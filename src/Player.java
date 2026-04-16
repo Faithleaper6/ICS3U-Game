@@ -10,17 +10,17 @@ public class Player {
     private Gear helmet;
     private Gear bodyArmor;
 
-    private Weapon pistol;   // always carried
-    private Weapon rifle;    // one rifle slot (Garand, SMG, or Sniper)
-    private boolean usingRifle; // true = rifle selected, false = pistol
+    private Weapon pistol;   
+    private Weapon rifle;    
+    private boolean usingRifle; 
 
     private int foodCount, waterCount, medkitCount;
     private int grenades;
     private int kills;
     private int level;
 
-    // Difficulty-based bonuses per level
-    private double lootBonusPerLevel;     // 0.02-0.05
+    
+    private double lootBonusPerLevel;    
     private double accuracyBonusPerLevel; 
 
-}
+   

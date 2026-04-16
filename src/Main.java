@@ -1,10 +1,9 @@
 import java.util.Scanner;
+
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        Game game = new Game();
-        game.start();
         System.out.println("============================================");
         System.out.println("       BEHIND ENEMY LINES - WW2 SURVIVAL   ");
         System.out.println("============================================");
@@ -22,7 +21,8 @@ public class Main {
         while (choice < 1 || choice > 3) {
             if (scanner.hasNextInt()) {
                 choice = scanner.nextInt();
-                if (choice < 1 || choice > 3) System.out.print("Enter 1, 2, or 3: ");
+                if (choice < 1 || choice > 3)
+                    System.out.print("Enter 1, 2, or 3: ");
             } else {
                 scanner.next();
                 System.out.print("Enter 1, 2, or 3: ");
@@ -32,19 +32,28 @@ public class Main {
 
         int numEnemies, numAllies;
         String diffName;
-        if (choice == 1) { numEnemies = 10; numAllies = 9; diffName = "Easy"; }
-        else if (choice == 2) { numEnemies = 25; numAllies = 24; diffName = "Medium"; }
-        else { numEnemies = 50; numAllies = 49; diffName = "Hard"; }
+        if (choice == 1) {
+            numEnemies = 10;
+            numAllies = 9;
+            diffName = "Easy";
+        } else if (choice == 2) {
+            numEnemies = 25;
+            numAllies = 24;
+            diffName = "Medium";
+        } else {
+            numEnemies = 50;
+            numAllies = 49;
+            diffName = "Hard";
+        }
 
         System.out.println("\n>> Difficulty: " + diffName);
-        System.out.println(">> Enemies: " + numEnemies + " | Your squad: " + (numAllies + 1) + " (you + " + numAllies + " allies)");
+        System.out.println(">> Enemies: " + numEnemies + " | Your squad: " + (numAllies + 1) + " (you + " + numAllies
+                + " allies)");
         System.out.println("\nGear up, soldier. Move out!\n");
 
         Game game = new Game(numEnemies, numAllies, choice, scanner);
         game.run();
 
         scanner.close();
-    }
-}
     }
 }
