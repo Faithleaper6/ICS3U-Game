@@ -30,6 +30,12 @@ public class Main {
         }
         scanner.nextLine();
 
+        System.out.println("Pick a name for your soldier:");
+        System.out.print("Name: ");
+        String name = scanner.nextLine().trim();
+        if (name.isEmpty()) {
+            name = "Player";
+        }
         int numEnemies, numAllies;
         String diffName;
         if (choice == 1) {
@@ -51,7 +57,7 @@ public class Main {
                 + " allies)");
         System.out.println("\nGear up, soldier. Move out!\n");
 
-        Game game = new Game(numEnemies, numAllies, choice, scanner);
+        Game game = new Game(numEnemies, numAllies, choice, name);
         game.run();
 
         scanner.close();
