@@ -3,7 +3,7 @@
       "name": "Trench",
       "description": "You are in the trench. The trench leads east.",
       "exits": {
-        "east": "trench"
+        "east": "trench2"
             
     }
   },
@@ -12,16 +12,16 @@
       "description": "You are in the trench. The trench leads east and west, and there is a bunker to the south.",
       "exits": {
         "south": "bunker",
-        "east": "trench",
-        "west": "trench"
+        "east": "trench3",
+        "west": "trench1"
     }
   },   
     "trench3": {
       "name": "Trench",
       "description": "You are in the trench. The trench leads east and west.",
       "exits": {
-        "east": "trench",
-        "west": "trench"
+        "east": "trench4",
+        "west": "trench2"
     }
   }
 }
