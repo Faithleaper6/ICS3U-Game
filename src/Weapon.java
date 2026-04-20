@@ -24,6 +24,10 @@ public class Weapon {
         this.fullAuto = fullAuto;
     }
 
+    public Weapon(String itemId, String itemName, String itemDescription) {
+        //TODO Auto-generated constructor stub
+    }
+
     public String getName() {
         return name;
     }

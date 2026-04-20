@@ -86,14 +86,71 @@ public class CommandParser {
                         System.out.println("You don't have a " + itemName + ".");
                     }
                 }
+            case "shoot":
+                player.shootCurrentWeapon(); 
                 break;
+
+            case "magdump":
+                if (player.getCurrentWeapon().getName().equalsIgnoreCase("Thompson SMG")) {
+                    player.magDump();
+                } else {
+                    System.out.println("You need a Thompson SMG to do that!");
+                }
+                break;
+
+            case "grenade":
+                player.throwGrenade(); // Handle 1-3 enemies and 40-70 damage logic
+                break;
+
+            case "bunker":
+                System.out.println("You sprint through the mud toward a bunker...");
+                player.searchForSupplies(); 
+                break;
+
+            case "eat":
+                player.consumeItem("Food", 35);
+
+            case "drink":
+                player.consumeItem("Water", 30); 
+                break;
+
+            case "medkit":
+                player.useMedkit(40);
+                break;
+
+            case "reload":
+                player.reloadWeapon();
+                break;
+
+            case "switch":
+                player.switchWeapon();
+                break;
+
+            case "status":
+                player.displayStatus();
+                break;
+
+            case "level":
+                player.displayLevelStats();
+                break;
+
+            case "advance":
+                game.advanceTime();
+                break;
+
             case "help":
-                System.out
-                        .println("Available commands: go [direction], look, take [item], drop [item], inventory, help");
+                printHelp();
+                if (Math.random() < 0.05) { 
+                    System.out.println("!! Incoming mortar! You took damage while reading!");
+                    player.takeDamage(10);
+                }
                 break;
+            
+
             default:
-                System.out.println("I don't understand that command.");
+                System.out.println("I don't understand that command. Retype if available.");
                 break;
         }
     }
 }
+

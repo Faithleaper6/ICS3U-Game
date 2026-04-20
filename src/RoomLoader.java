@@ -32,7 +32,7 @@ public class RoomLoader {
                     items.add(new Weapon(itemId, itemName, itemDescription));
                 }
 
-                Gear room = new Gear(roomId, name, description, exits, items);
+                Gear room = new Gear(roomId, name, description);
                 rooms.put(roomId, room);
             }
         } catch (Exception e) {

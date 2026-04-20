@@ -16,7 +16,7 @@ public class Game {
         this.choice = choice;
         this.playerName = name;
 
-        player = new Player(playerName, 100, 100, 100);
+        player = new Player();
 
         commandParser = new CommandParser();
     }
