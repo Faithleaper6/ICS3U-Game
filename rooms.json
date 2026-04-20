@@ -1,9 +1,11 @@
 {
-    "entrance": {
-      "name": "Entrance Hall",
-      "description": "You are in a grand entrance hall. A door leads north.",
+    "trench": {
+      "name": "Trench",
+      "description": "You are in the trench. The trench leads east and west, and there is a bunker to the south.",
       "exits": {
-        "north": "library"
+        "east": "trench",
+        "west": "trench",
+        "south": "bunker"
       },
       "items": [
         {
