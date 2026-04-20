@@ -1,32 +1,27 @@
 {
-    "trench": {
+    "trench1": {
+      "name": "Trench",
+      "description": "You are in the trench. The trench leads east.",
+      "exits": {
+        "east": "trench"
+            
+    }
+  },
+    "trench2": {
       "name": "Trench",
       "description": "You are in the trench. The trench leads east and west, and there is a bunker to the south.",
       "exits": {
+        "south": "bunker",
         "east": "trench",
-        "west": "trench",
-        "south": "bunker"
-      },
-      "items": [
-        {
-          "id": "key1",
-          "name": "Key",
-          "description": "A small rusty key."
-        },
-        {
-          "id": "pencil",
-          "name": "Pencil",
-          "description": "A dull yellow pencil with a broken eraser."
-        }
-      ]
-    },
-    "library": {
-      "name": "Library",
-      "description": "Books line the walls. It's quiet.",
+        "west": "trench"
+    }
+  },   
+    "trench3": {
+      "name": "Trench",
+      "description": "You are in the trench. The trench leads east and west.",
       "exits": {
-        "south": "entrance"
-      },
-      "items": []
+        "east": "trench",
+        "west": "trench"
     }
   }
-  
+}
