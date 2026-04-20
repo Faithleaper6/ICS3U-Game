@@ -5,7 +5,13 @@
       "exits": {
         "east": "trench2"
             
-    }
+    },
+    "items": [],
+
+"type": "trench",
+
+"enemyChance": 0.2
+ 
   },
     "trench2": {
       "name": "Trench",
@@ -14,7 +20,13 @@
         "south": "bunker",
         "east": "trench3",
         "west": "trench1"
-    }
+    },
+    "items": [],
+
+"type": "trench",
+
+"enemyChance": 0.2
+ 
   },   
     "trench3": {
       "name": "Trench",
@@ -22,6 +34,12 @@
       "exits": {
         "east": "trench4",
         "west": "trench2"
-    }
+    },
+    "items": [],
+
+"type": "trench",
+
+"enemyChance": 0.2
+ 
   }
 }
