@@ -137,5 +137,29 @@
 "type": "bunker",
 
 "enemyChance": 0.2
+  },
+   "bunker2": {
+      "name": "Bunker",
+      "description": "You are in a bunker away from the all the noise and open fire from the trench. You can type loot to loot any possible items within the bunker.",
+      "exits": {
+        "north": "trench5"
+    },
+    "items": [],
+
+"type": "bunker",
+
+"enemyChance": 0.2
+  },
+   "bunker3": {
+      "name": "Bunker",
+      "description": "You are in a bunker away from the all the noise and open fire from the trench. You can type loot to loot any possible items within the bunker.",
+      "exits": {
+        "north": "trench8"
+    },
+    "items": [],
+
+"type": "bunker",
+
+"enemyChance": 0.2
   }
 }
