@@ -17,7 +17,7 @@
       "name": "Trench",
       "description": "You are in the trench. The trench leads east and west, and there is a bunker to the south.",
       "exits": {
-        "south": "bunker",
+        "south": "bunker1",
         "east": "trench3",
         "west": "trench1"
     },
@@ -41,5 +41,89 @@
 
 "enemyChance": 0.2
  
-  }
+  },
+  "trench4": {
+      "name": "Trench",
+      "description": "You are in the trench. The trench leads east and west.",
+      "exits": {
+        "east": "trench5",
+        "west": "trench3"
+    },
+    "items": [],
+
+"type": "trench",
+
+"enemyChance": 0.2
+ 
+  },
+"trench5": {
+      "name": "Trench",
+      "description": "You are in the trench. The trench leads east and west, and a bunker leads south.",
+      "exits": {
+        "east": "trench6",
+        "west": "trench4",
+        "south": "bunker2"
+    },
+    "items": [],
+
+"type": "trench",
+
+"enemyChance": 0.2
+  },
+  "trench6": {
+      "name": "Trench",
+      "description": "You are in the trench. The trench leads east and west.",
+      "exits": {
+        "east": "trench7",
+        "west": "trench5"
+    },
+    "items": [],
+
+"type": "trench",
+
+"enemyChance": 0.2
+ 
+  },
+  "trench7": {
+      "name": "Trench",
+      "description": "You are in the trench. The trench leads east and west.",
+      "exits": {
+        "east": "trench8",
+        "west": "trench6"
+    },
+    "items": [],
+
+"type": "trench",
+
+"enemyChance": 0.2
+ 
+  },
+  "trench8": {
+      "name": "Trench",
+      "description": "You are in the trench. The trench leads east and west, and there is a bunker to the south.",
+      "exits": {
+        "east": "trench9",
+        "west": "trench7",
+        "south": "bunker3"
+    },
+    "items": [],
+
+"type": "trench",
+
+"enemyChance": 0.2
+ 
+  },
+  "trench9": {
+      "name": "Trench",
+      "description": "You are in the trench. The trench leads west.",
+      "exits": {
+        "west": "trench8"
+    },
+    "items": [],
+
+"type": "trench",
+
+"enemyChance": 0.2
+ 
+  },
 }
