@@ -1,11 +1,14 @@
 public class Bunker {
+
     public static void search(Player player) {
         System.out.println("\nYou cautiously enter a bunker and search around...");
+        getLoot(player);
+    }
 
+    public static void getLoot(Player player) {
         double lootBonus = player.getLootBonus();
         double roll = Math.random();
 
-        // Higher level = less chance of nothing, more chance of good loot
         double nothingThreshold = Math.max(0.05, 0.15 - lootBonus);
 
         if (roll < nothingThreshold) {
@@ -19,18 +22,15 @@ public class Bunker {
             player.addWater(amount);
             System.out.println("Found " + amount + " canteen(s) of water!");
         } else if (roll < nothingThreshold + 0.35) {
-            // Ammo - give mags for whatever weapon they have
             giveAmmo(player);
         } else if (roll < nothingThreshold + 0.43) {
             player.addMedkit(1);
             System.out.println("Found a medkit!");
         } else if (roll < nothingThreshold + 0.50) {
-            // Grenades
             int amount = 1 + (int) (Math.random() * 2);
             player.addGrenades(amount);
             System.out.println("Found " + amount + " grenade(s)!");
         } else if (roll < nothingThreshold + 0.60) {
-            // Weapon
             Weapon found = getRandomWeapon();
             System.out.println("Found a " + found.getName() + "!");
             player.pickUpRifle(found);
@@ -47,7 +47,6 @@ public class Bunker {
                 System.out.println("Found body armor, but yours is still intact.");
             }
         } else {
-            // Jackpot
             System.out.println("JACKPOT! This bunker is loaded!");
             player.addFood(2);
             player.addWater(2);
@@ -59,8 +58,7 @@ public class Bunker {
     }
 
     private static void giveAmmo(Player player) {
-        // Give ammo mags for weapons the player actually has
-        int mags = 1 + (int) (Math.random() * 2); // 1-2 mags
+        int mags = 1 + (int) (Math.random() * 2);
         player.getPistol().addMags(mags);
         System.out.println("Found " + mags + " pistol mag(s) for " + player.getPistol().getName() + "!");
 
@@ -69,5 +67,14 @@ public class Bunker {
             player.getRifle().addMags(rifleMags);
             System.out.println("Found " + rifleMags + " rifle mag(s) for " + player.getRifle().getName() + "!");
         }
+    }
+
+    private static Weapon getRandomWeapon() {
+        double r = Math.random();
+        if (r < 0.40)
+            return Weapon.createRifle();
+        if (r < 0.70)
+            return Weapon.createSMG();
+        return Weapon.createSniper();
     }
 }

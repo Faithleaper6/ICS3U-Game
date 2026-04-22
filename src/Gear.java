@@ -28,8 +28,6 @@ public class Gear {
         return description;
     }
 
-    
-
     public String getLongDescription() {
         StringBuilder sb = new StringBuilder();
         sb.append(name).append("\n");
