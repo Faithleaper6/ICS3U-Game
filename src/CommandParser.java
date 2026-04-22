@@ -1,7 +1,16 @@
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class CommandParser {
-    public void parse(String input, Player player, Map<String, Gear> game) {
+
+    /**
+     * Parses and executes a command from the player.
+     * Called by Game.java each turn with all the game state needed.
+     */
+    public static void parse(String input, Player player, HashMap<String, Room> rooms,
+            ArrayList<Enemy> enemies, ArrayList<Boolean> allies,
+            TimeManager timeManager, Game game) {
+
         String[] words = input.trim().toLowerCase().split("\\s+");
         if (words.length == 0) {
             System.out.println("Please enter a command.");
@@ -11,146 +20,140 @@ public class CommandParser {
         String command = words[0];
 
         switch (command) {
+            // === MOVEMENT ===
             case "go":
                 if (words.length < 2) {
-                    System.out.println("Go where?");
+                    System.out.println("Go where? (north, south, east, west)");
                 } else {
-                    String direction = words[1];
-                    Gear currentRoom = rooms.get(player.getCurrentRoomId());
-                    String nextRoomId = currentRoom.getExits().get(direction);
-                    if (nextRoomId != null) {
-                        player.setCurrentRoomId(nextRoomId);
-                        System.out.println("You move " + direction + ".");
-                        currentRoom = rooms.get(player.getCurrentRoomId());
-                        System.out.println(currentRoom.getLongDescription());
+                    game.movePlayer(words[1]);
+                }
+                break;
 
-                    } else {
-                        System.out.println("You can't go that way.");
-                    }
-                }
+            case "north":
+            case "south":
+            case "east":
+            case "west":
+            case "n":
+            case "s":
+            case "e":
+            case "w":
+                game.movePlayer(command);
                 break;
+
+            // === LOOK / SEARCH ===
             case "look":
-                Gear currentRoom = rooms.get(player.getCurrentRoomId());
-                System.out.println(currentRoom.getLongDescription());
+                Room currentRoom = rooms.get(player.getCurrentRoomId());
+                currentRoom.printRoom();
+                System.out.println("\nCover quality: " + game.getCoverDesc(currentRoom));
+                game.printBattlefield();
                 break;
-            case "inventory":
-                if (player.getInventory().isEmpty()) {
-                    System.out.println("Your inventory is empty.");
-                } else {
-                    System.out.println("You are carrying:");
-                    for (Weapon item : player.getInventory()) {
-                        System.out.println("- " + item.getName());
-                    }
-                }
+
+            case "search":
+            case "loot":
+                game.searchCurrentRoom();
                 break;
-            case "take":
-                if (words.length < 2) {
-                    System.out.println("Take what?");
-                } else {
-                    String itemName = words[1];
-                    Gear room = rooms.get(player.getCurrentRoomId());
-                    Weapon itemToTake = null;
-                    for (Weapon item : room.getItems()) {
-                        if (item.getName().equalsIgnoreCase(itemName)) {
-                            itemToTake = item;
-                            break;
-                        }
-                    }
-                    if (itemToTake != null) {
-                        room.removeItem(itemToTake);
-                        player.addItem(itemToTake);
-                        System.out.println("You take the " + itemToTake.getName() + ".");
-                    } else {
-                        System.out.println("There is no " + itemName + " here.");
-                    }
-                }
-                break;
-            case "drop":
-                if (words.length < 2) {
-                    System.out.println("Drop what?");
-                } else {
-                    String itemName = words[1];
-                    Weapon itemToDrop = null;
-                    for (Weapon item : player.getInventory()) {
-                        if (item.getName().equalsIgnoreCase(itemName)) {
-                            itemToDrop = item;
-                            break;
-                        }
-                    }
-                    if (itemToDrop != null) {
-                        player.removeItem(itemToDrop);
-                        Gear room = rooms.get(player.getCurrentRoomId());
-                        room.addItem(itemToDrop);
-                        System.out.println("You drop the " + itemToDrop.getName() + ".");
-                    } else {
-                        System.out.println("You don't have a " + itemName + ".");
-                    }
-                }
+
+            // === COMBAT ===
             case "shoot":
-                player.shootCurrentWeapon(); 
+            case "fire":
+            case "attack":
+                game.shootEnemy();
                 break;
 
             case "magdump":
-                if (player.getCurrentWeapon().getName().equalsIgnoreCase("Thompson SMG")) {
-                    player.magDump();
-                } else {
-                    System.out.println("You need a Thompson SMG to do that!");
-                }
+            case "dump":
+            case "fullauto":
+                game.magDump();
                 break;
 
             case "grenade":
-                player.throwGrenade(); // Handle 1-3 enemies and 40-70 damage logic
+            case "throw":
+            case "nade":
+                game.throwGrenade();
                 break;
 
-            case "bunker":
-                System.out.println("You sprint through the mud toward a bunker...");
-                player.searchForSupplies(); 
-                break;
-
+            // === SURVIVAL ===
             case "eat":
-                player.consumeItem("Food", 35);
+                player.eat();
+                game.warRages(false);
+                break;
 
             case "drink":
-                player.consumeItem("Water", 30); 
+                player.drink();
+                game.warRages(false);
                 break;
 
             case "medkit":
-                player.useMedkit(40);
+            case "heal":
+                player.useMedkit();
+                game.warRages(false);
                 break;
 
             case "reload":
-                player.reloadWeapon();
+                player.getCurrentWeapon().reload();
+                game.warRages(false);
                 break;
 
             case "switch":
                 player.switchWeapon();
                 break;
 
+            // === INFO ===
             case "status":
-                player.displayStatus();
+            case "stats":
+                player.printStatus();
+                game.printBattlefield();
                 break;
 
             case "level":
-                player.displayLevelStats();
+                System.out.println("\nLevel " + player.getLevel() + " | Kills: " + player.getKills());
+                System.out.println("Accuracy bonus: +" + String.format("%.0f", player.getAccuracyBonus() * 100) + "%");
+                System.out.println("Loot bonus: +" + String.format("%.0f", player.getLootBonus() * 100) + "%");
                 break;
 
+            // === TIME ===
             case "advance":
-                game.advanceTime();
+            case "time":
+            case "wait":
+                timeManager.advanceTime(player, enemies, allies);
+                game.restockBunkers();
+                game.warRages(true);
+                game.warRages(true);
                 break;
 
+            // === HELP ===
             case "help":
                 printHelp();
-                if (Math.random() < 0.05) { 
-                    System.out.println("!! Incoming mortar! You took damage while reading!");
-                    player.takeDamage(10);
-                }
                 break;
-            
 
             default:
-                System.out.println("I don't understand that command. Retype if available.");
+                System.out.println("Unknown command. Type 'help' for a list of commands.");
                 break;
         }
     }
-}
 
+    private static void printHelp() {
+        System.out.println("\n--- MOVEMENT ---");
+        System.out.println("  north/south/east/west (or n/s/e/w) - Move to adjacent location");
+        System.out.println("  go <direction>                      - Same as above");
+        System.out.println("\n--- COMBAT ---");
+        System.out.println("  look     - View current location, cover, and danger");
+        System.out.println("  shoot    - Peek out and fire at an enemy");
+        System.out.println("  magdump  - [Thompson SMG only] Full-auto spray!");
+        System.out.println("  grenade  - Throw a grenade (40-70 dmg, 1-3 enemies)");
+        System.out.println("\n--- SURVIVAL ---");
+        System.out.println("  search   - Search current location for loot");
+        System.out.println("  eat      - Eat food (+35 hunger)");
+        System.out.println("  drink    - Drink water (+30 energy)");
+        System.out.println("  medkit   - Use a medkit (+40 HP)");
+        System.out.println("  reload   - Reload weapon from reserve mags");
+        System.out.println("  switch   - Switch between pistol and rifle");
+        System.out.println("\n--- INFO ---");
+        System.out.println("  status   - View all stats and gear");
+        System.out.println("  level    - Check level and bonuses");
+        System.out.println("  advance  - Fast-forward to next time period");
+        System.out.println("  help     - Show this list");
+        System.out.println("\n  !! The battlefield is NEVER safe. Every action");
+        System.out.println("     has a chance of trench danger.");
+    }
+}
