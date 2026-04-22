@@ -2,22 +2,22 @@ import java.util.List;
 import java.util.Map;
 
 public class Gear {
-    private String id;
+    private String protection;
     private String name;
     private String description;
     private Map<String, String> exits; // direction → roomId
     private List<Weapon> items;
 
-    public Gear(String id, String name, String description) {
-        this.id = id;
+    public Gear(int protection, String name, String description) {
+        this.protection = String.valueOf(protection);
         this.name = name;
         this.description = description;
         this.exits = exits;
         this.items = items;
     }
 
-    public String getId() {
-        return id;
+    public String getProtection() {
+        return protection;
     }
 
     public String getName() {
@@ -53,5 +53,16 @@ public class Gear {
         }
 
         return sb.toString();
+    }
+
+    public static Gear createHelmet() {
+        Gear helmet = new Gear(50, "helmet",
+                "A standard issue M1 steel helmet, providing basic protection against shrapnel and debris. It has seen better days but can still save your life if you get hit in the head.");
+        return helmet;
+
+    }
+
+    public Gear createHelmet() {
+        return Gear.createHelmet();
     }
 }
