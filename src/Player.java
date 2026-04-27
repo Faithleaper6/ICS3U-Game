@@ -86,4 +86,9 @@ public class Player {
         System.out.println("You equip the " + rifle.getName() + " as your primary weapon.");
     }
 
+    public void replaceHelmet() {
+        helmet = Gear.createHelmet();
+        System.out.println("Equipped a new helmet!");
+
+    }
 }

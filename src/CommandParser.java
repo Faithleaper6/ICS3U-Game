@@ -3,10 +3,6 @@ import java.util.HashMap;
 
 public class CommandParser {
 
-    /**
-     * Parses and executes a command from the player.
-     * Called by Game.java each turn with all the game state needed.
-     */
     public static void parse(String input, Player player, HashMap<String, Room> rooms,
             ArrayList<Enemy> enemies, ArrayList<Boolean> allies,
             TimeManager timeManager, Game game) {
@@ -20,7 +16,6 @@ public class CommandParser {
         String command = words[0];
 
         switch (command) {
-            // === MOVEMENT ===
             case "go":
                 if (words.length < 2) {
                     System.out.println("Go where? (north, south, east, west)");
@@ -40,7 +35,6 @@ public class CommandParser {
                 game.movePlayer(command);
                 break;
 
-            // === LOOK / SEARCH ===
             case "look":
                 Room currentRoom = rooms.get(player.getCurrentRoomId());
                 currentRoom.printRoom();
@@ -53,7 +47,6 @@ public class CommandParser {
                 game.searchCurrentRoom();
                 break;
 
-            // === COMBAT ===
             case "shoot":
             case "fire":
             case "attack":
@@ -72,7 +65,6 @@ public class CommandParser {
                 game.throwGrenade();
                 break;
 
-            // === SURVIVAL ===
             case "eat":
                 player.eat();
                 game.warRages(false);
@@ -98,7 +90,6 @@ public class CommandParser {
                 player.switchWeapon();
                 break;
 
-            // === INFO ===
             case "status":
             case "stats":
                 player.printStatus();
@@ -111,7 +102,6 @@ public class CommandParser {
                 System.out.println("Loot bonus: +" + String.format("%.0f", player.getLootBonus() * 100) + "%");
                 break;
 
-            // === TIME ===
             case "advance":
             case "time":
             case "wait":
@@ -121,7 +111,6 @@ public class CommandParser {
                 game.warRages(true);
                 break;
 
-            // === HELP ===
             case "help":
                 printHelp();
                 break;
