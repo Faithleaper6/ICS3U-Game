@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.ArrayList;
 
 public class Game {
+    private ArrayList<Enemy> enemies;
+    private ArrayList<Boolean> allies;
     private Map<String, Room> rooms;
     private Player player;
     private CommandParser commandParser;
@@ -19,7 +21,7 @@ public class Game {
         this.playerName = name;
         this.rooms = RoomLoader.loadRooms("rooms.json");
 
-        player = new Player();
+        player = new Player(playerName, 100, 100, 100);
 
         commandParser = new CommandParser();
     }
@@ -35,7 +37,7 @@ public class Game {
 
             System.out.print("> ");
             String input = scanner.nextLine();
-            commandParser.parse(input, player, rooms);
+            commandParser.parse(input, player, rooms, enemies, allies, timeManager, this);
         }
     }
 
@@ -85,6 +87,12 @@ public class Game {
         player.setCurrentRoomId(nextRoomId);
         player.drainEnergy(2);
         player.drainHunger(1);
+
+        if (Math.random() < nextRoom.getEnemyChance() && countAliveEnemies() > 0) {
+        System.out.println("\n!! ENEMY CONTACT! You've been spotted!");
+        incomingFire(nextRoom);
+    }
+}
     }
 
 }
