@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.*;
 
 public class Player {
     private String name;
@@ -22,7 +23,7 @@ public class Player {
     private double lootBonusPerLevel;
     private double accuracyBonusPerLevel;
 
-    private Room currentroomid;
+    private String currentroomid;
 
     public Player(String name, int health, int hunger, int energy) {
         this.name = name;
@@ -46,6 +47,7 @@ public class Player {
         this.grenades = 3;
         this.kills = 0;
         this.level = 1;
+        this.currentroomid = "trench5";
 
     }
 
@@ -91,4 +93,13 @@ public class Player {
         System.out.println("Equipped a new helmet!");
 
     }
+
+    public String getCurrentRoomId() {
+        return this.currentroomid;
+    }
+
+    public void setCurrentRoomId(String roomId) {
+        this.currentroomid = roomId;
+    }
+
 }

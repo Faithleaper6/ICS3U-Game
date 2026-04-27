@@ -1,8 +1,10 @@
 import java.util.Map;
 import java.util.Scanner;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 public class Game {
-    private Map<String, Gear> rooms;
+    private Map<String, Room> rooms;
     private Player player;
     private CommandParser commandParser;
     private int numEnemies;
@@ -15,6 +17,7 @@ public class Game {
         this.numAllies = numAllies;
         this.choice = choice;
         this.playerName = name;
+        this.rooms = RoomLoader.loadRooms("rooms.json");
 
         player = new Player();
 
@@ -56,4 +59,32 @@ public class Game {
         System.out.println("     checking help has a chance of trench danger.");
         System.out.println("----------------");
     }
+
+    public void movePlayer(String direction) {
+        // Expand shorthand
+        if (direction.equals("n"))
+            direction = "north";
+        if (direction.equals("s"))
+            direction = "south";
+        if (direction.equals("e"))
+            direction = "east";
+        if (direction.equals("w"))
+            direction = "west";
+
+        Room currentRoom = rooms.get(player.getCurrentRoomId());
+
+        if (currentRoom.getExits().containsKey(direction)) {
+            String nextRoomId = currentRoom.getExits().get(direction);
+            player.setCurrentRoomId(nextRoomId);
+            Room nextRoom = rooms.get(nextRoomId);
+            nextRoom.printRoom();
+        } else {
+            System.out.println("You can't go that way.");
+
+        }
+        Player.setCurrentRoomId(nextRoomId);
+        Player.drainEnergy(2);
+        Player.drainhunger(1);
+    }
+
 }

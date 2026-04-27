@@ -3,7 +3,7 @@ import java.util.*;
 import com.google.gson.*;
 
 public class RoomLoader {
-    public Map<String, Gear> loadRooms(String filePath) {
+    public static Map<String, Gear> loadRooms(String filePath) {
         Map<String, Gear> rooms = new HashMap<>();
         try {
             Gson gson = new Gson();
