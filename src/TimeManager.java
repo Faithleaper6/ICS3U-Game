@@ -35,6 +35,28 @@ public class TimeManager {
             energyDrain += 5;
         }
 
+        player.drainHunger(hungerDrain);
+        player.drainEnergy(energyDrain);
+        System.out.println("You feel hungrier (-" + hungerDrain + " hunger) and more tired (-" + energyDrain
+                + " energy) as time passes.");
+
+        if (player.getHunger() < 25) {
+            System.out.println("Your hunger is critically low! You need to eat soon or you'll start taking damage!");
+        }
+        if (player.getEnergy() < 25) {
+            System.out.println(
+                    "Your energy is critically low! You need to drink water soon or you'll start taking damage!");
+        }
+
+        if (player.getHunger() <= 0) {
+            System.out.println("You are starving! You take 10 damage from hunger.");
+            player.takeDamage(10);
+        }
+        if (player.getEnergy() <= 0) {
+            System.out.println("You are exhausted! You take 10 damage from exhaustion.");
+            player.takeDamage(10);
+        }
+
     }
 
 }
