@@ -105,8 +105,9 @@ public class Player {
     public void drainEnergy(int energyDrain) {
         energy = energy - energyDrain;
     }
+
     public void drainHunger(int hungerDrain) {
-        hunger = hunger--;
+        hunger = hunger - hungerDrain;
     }
 
 }
