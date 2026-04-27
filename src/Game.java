@@ -84,7 +84,7 @@ public class Game {
         }
         Player.setCurrentRoomId(nextRoomId);
         Player.drainEnergy(2);
-        Player.drainhunger(1);
+        Player.drainHunger(1);
     }
 
 }
