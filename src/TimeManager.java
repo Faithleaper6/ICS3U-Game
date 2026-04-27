@@ -50,11 +50,11 @@ public class TimeManager {
 
         if (player.getHunger() <= 0) {
             System.out.println("You are starving! You take 10 damage from hunger.");
-            player.takeDamage(10);
+            player.takeDamage(10, false);
         }
         if (player.getEnergy() <= 0) {
             System.out.println("You are exhausted! You take 10 damage from exhaustion.");
-            player.takeDamage(10);
+            player.takeDamage(10, false);
         }
 
     }
