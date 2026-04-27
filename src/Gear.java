@@ -2,22 +2,22 @@ import java.util.List;
 import java.util.Map;
 
 public class Gear {
-    private String protection;
+    private String protection_level;
     private String name;
     private String description;
     private Map<String, String> exits; // direction → roomId
     private List<Weapon> items;
 
     public Gear(int protection, String name, String description) {
-        this.protection = String.valueOf(protection);
+        this.protection_level = String.valueOf(protection);
         this.name = name;
         this.description = description;
         this.exits = exits;
         this.items = items;
     }
 
-    public String getProtection() {
-        return protection;
+    public String getProtectionLevel() {
+        return protection_level;
     }
 
     public String getName() {
@@ -65,4 +65,5 @@ public class Gear {
     public Gear createHelmet() {
         return Gear.createHelmet();
     }
+    // "hello"
 }
