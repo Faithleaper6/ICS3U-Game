@@ -102,4 +102,11 @@ public class Player {
         this.currentroomid = roomId;
     }
 
+    public void drainEnergy(int energyDrain) {
+        energy = energy - energyDrain;
+    }
+    public void drainHunger(int hungerDrain) {
+        hunger = hunger--;
+    }
+
 }
