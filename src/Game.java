@@ -82,9 +82,9 @@ public class Game {
             System.out.println("You can't go that way.");
 
         }
-        Player.setCurrentRoomId(nextRoomId);
-        Player.drainEnergy(2);
-        Player.drainHunger(1);
+        player.setCurrentRoomId(nextRoomId);
+        player.drainEnergy(2);
+        player.drainHunger(1);
     }
 
 }
