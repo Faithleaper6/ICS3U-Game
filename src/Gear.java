@@ -3,22 +3,24 @@ import java.util.Map;
 import java.util.*;
 
 public class Gear {
-    private String protection_level;
+    private double damageReduction; // percentage of damage reduced (e.g., 0.25 for 25% reduction)
     private String name;
     private String description;
+    private int maxHits;
+    private int hitsRemaining;
     private Map<String, String> exits; // direction → roomId
     private List<Weapon> items;
 
-    public Gear(int protection, String name, String description) {
-        this.protection_level = String.valueOf(protection);
+    public Gear(double protection, String name, String description) {
+        this.damageReduction = protection;
         this.name = name;
         this.description = description;
         this.exits = exits;
         this.items = items;
     }
 
-    public String getProtectionLevel() {
-        return protection_level;
+    public double getdamageReduction() {
+        return damageReduction;
     }
 
     public String getName() {
@@ -66,5 +68,25 @@ public class Gear {
     public Gear createHelmet() {
         return Gear.createHelmet();
     }
-    // "hello"
+
+    public boolean isBroken() {
+        return hitsRemaining <= 0;
+    }
+
+    public int absorbDamage(int incomingDamage) {
+        if (hitsRemaining <= 0) {
+            return incomingDamage; // gear is broken, no protection
+        }
+        hitsRemaining--;
+        int absorbed = (int) (incomingDamage * damageReduction);
+        int actualDamage = incomingDamage - absorbed;
+        if (hitsRemaining <= 0) {
+            System.out.println("  >> Your " + name + " has been DESTROYED!");
+        } else {
+            System.out.println("  >> Your " + name + " absorbed " + absorbed +
+                    " damage! (" + hitsRemaining + " hits left)");
+        }
+        return actualDamage;
+    }
+
 }

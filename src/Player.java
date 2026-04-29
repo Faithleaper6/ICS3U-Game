@@ -110,4 +110,28 @@ public class Player {
         hunger = hunger - hungerDrain;
     }
 
+    public void takeDamage(int damage, boolean headshot) {
+        int actualDamage = damage;
+        if (headshot && !helmet.isBroken())
+            actualDamage = helmet.absorbDamage(damage);
+        else if (!headshot && !bodyArmor.isBroken())
+            actualDamage = bodyArmor.absorbDamage(damage);
+        health -= actualDamage;
+        if (health < 0)
+            health = 0;
+        System.out.println("  >> You took " + actualDamage + " damage! Health: " + health + "/" + maxHealth);
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
+    public int getEnergy() {
+        return energy;
+    }
+
+    public int getHunger() {
+        return hunger;
+    }
+
 }
