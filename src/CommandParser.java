@@ -113,6 +113,9 @@ public class CommandParser {
             case "help":
                 printHelp();
                 break;
+                case "sleep": case "rest":
+                 game.sleep();
+                break;
 
             default:
                 System.out.println("Unknown command. Type 'help' for a list of commands.");

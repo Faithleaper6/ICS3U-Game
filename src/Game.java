@@ -1,6 +1,6 @@
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.ArrayList;
 
 public class Game {
     private ArrayList<Enemy> enemies;
@@ -400,4 +400,42 @@ public class Game {
             }
         }
     }
+    public void sleep() {
+    Room room = rooms.get(player.getCurrentRoomId());
+
+    if (!room.getType().equals("bunker")) {
+        System.out.println("You can't sleep in the open! Find a bunker first.");
+        return;
+    }
+
+    System.out.println("\nYou lean against the bunker wall and close your eyes...");
+    System.out.println("Zzzzz...\n");
+
+    // Restore energy
+    int restored = 30 + (int)(Math.random() * 21);
+    player.drainEnergy(-restored);
+    System.out.println("Energy restored! +" + restored + " energy.");
+
+    // Sleeping is very dangerous — triple war rounds
+    warRages(true);
+    warRages(true);
+    warRages(true);
+
+    // High chance of being woken up by attack
+    if (Math.random() < 0.40) {
+        System.out.println("\n!! You're jolted awake by an explosion nearby!");
+        int dmg = 10 + (int)(Math.random() * 15);
+        player.takeDamage(dmg, false);
+    }
+
+    // Enemies may sneak up
+    if (Math.random() < 0.25 && countAliveEnemies() > 0) {
+        System.out.println("!! An enemy found your bunker while you slept!");
+        incomingFire(room);
+    }
+
+    // Sleeping makes you hungry
+    player.drainHunger(10);
+    System.out.println("You feel rested but hungry. (-10 hunger)");
+}
 }
