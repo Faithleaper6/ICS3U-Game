@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": "../../ICS3U Game"
+		},
+		{
+			"name": "text-adventure-game",
+			"path": ".."
+		}
+	],
+	"settings": {
+		"java.project.sourcePaths": [
+			"src"
+		],
+		"java.project.outputPath": "bin",
+		"java.project.referencedLibraries": [
+			"lib/**/*.jar"
+		]
+	}
+}
