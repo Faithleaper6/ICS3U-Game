@@ -1,10 +1,9 @@
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.*;
+import java.util.Map;
 
 public class CommandParser {
 
-    public static void parse(String input, Player player, HashMap<String, Room> rooms,
+    public static void parse(String input, Player player, Map<String, Room> rooms,
             ArrayList<Enemy> enemies, ArrayList<Boolean> allies,
             TimeManager timeManager, Game game) {
 
@@ -108,7 +107,6 @@ public class CommandParser {
             case "wait":
                 timeManager.advanceTime(player, enemies, allies);
                 game.restockBunkers();
-                game.warRages(true);
                 game.warRages(true);
                 break;
 
