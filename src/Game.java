@@ -7,7 +7,6 @@ public class Game {
     private ArrayList<Boolean> allies;
     private Map<String, Room> rooms;
     private Player player;
-    private CommandParser commandParser;
     private TimeManager timeManager;
     private int numEnemies;
     private int numAllies;
@@ -27,36 +26,38 @@ public class Game {
         this.enemies = new ArrayList<>();
         this.allies = new ArrayList<>();
         this.timeManager = new TimeManager(choice);
-        this.commandParser = new CommandParser();
 
         createForces();
     }
 
     public void run() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Welcome to the BattleField!");
-        System.out.println("You are " + playerName + ", a soldier deployed behind enemy lines.");
-        System.out.println("Your mission: eliminate all enemy forces and survive.");
-        System.out.println("Type 'help' for a list of commands.\n");
+        try (Scanner scanner = new Scanner(System.in)) {
+            System.out.println("Welcome to the BattleField!");
+            System.out.println("You are " + playerName + ", a soldier deployed behind enemy lines.");
+            System.out.println("Your mission: eliminate all enemy forces and survive.");
+            System.out.println("Type 'help' for a list of commands.\n");
 
-        Room startingRoom = rooms.get(player.getCurrentRoomId());
-        if (startingRoom != null) {
-            startingRoom.printRoom();
-        }
+            Room startingRoom = rooms.get(player.getCurrentRoomId());
+            if (startingRoom != null) {
+                startingRoom.printRoom();
+            }
 
-        while (player.isAlive() && countAliveEnemies() > 0) {
-            System.out.print("> ");
-            String input = scanner.nextLine();
-             if (trenchDanger()) {
-        if (!player.isAlive()) continue;
-    }
-            commandParser.parse(input, player, rooms, enemies, allies, timeManager, this);
-        }
+            while (player.isAlive() && countAliveEnemies() > 0) {
+                System.out.print("> ");
+                String input = scanner.nextLine();
+                if (trenchDanger()) {
+                    if (!player.isAlive()) {
+                        continue;
+                    }
+                }
+                CommandParser.parse(input, player, rooms, enemies, allies, timeManager, this);
+            }
 
-        if (!player.isAlive()) {
-            System.out.println("\nYou collapse in the mud. Mission failed.");
-        } else {
-            System.out.println("\nThe last enemy falls. Mission accomplished!");
+            if (!player.isAlive()) {
+                System.out.println("\nYou collapse in the mud. Mission failed.");
+            } else {
+                System.out.println("\nThe last enemy falls. Mission accomplished!");
+            }
         }
     }
 
