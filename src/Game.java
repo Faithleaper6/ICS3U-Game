@@ -13,12 +13,14 @@ public class Game {
     private int numAllies;
     private int choice;
     private String playerName;
+    private int activeEnemies = 0;
 
-    public Game(int numEnemies, int numAllies, int choice, String name) {
+    public Game(int numEnemies, int numAllies, int choice, String name,int activeEnemies) {
         this.numEnemies = numEnemies;
         this.numAllies = numAllies;
         this.choice = choice;
         this.playerName = name;
+        this.activeEnemies = activeEnemies;
         this.rooms = RoomLoader.loadRooms("rooms.json");
 
         this.player = new Player(playerName, 100, 100, 100);
@@ -241,31 +243,58 @@ public class Game {
     }
 
     public void throwGrenade() {
-        if (!player.useGrenade()) {
-            return;
-        }
+    Room room = rooms.get(player.getCurrentRoomId());
 
-        if (countAliveEnemies() == 0) {
-            System.out.println("You throw a grenade, but there are no enemies left.");
-            return;
-        }
-
-        int targets = Math.min(countAliveEnemies(), 1 + (int) (Math.random() * 3));
-        System.out.println("You throw a grenade into the enemy line!");
-
-        for (int i = 0; i < targets; i++) {
-            Enemy target = getRandomAliveEnemy();
-            int damage = 40 + (int) (Math.random() * 31);
-            target.takeDamage(damage);
-            System.out.println("  Blast hits " + target.getType() + " for " + damage + " damage.");
-            if (!target.isAlive()) {
-                System.out.println("  Enemy " + target.getType() + " eliminated!");
-                player.addKill();
-            }
-        }
-
-        warRages(false);
+    // Throwing in bunker hits YOU
+    if (room.getType().equals("bunker")) {
+        if (!player.useGrenade()) return;
+        System.out.println("\nYou throw a grenade... inside the bunker?!");
+        System.out.println("!! THE GRENADE BOUNCES OFF THE WALL!");
+        int selfDmg = 40 + (int)(Math.random() * 31);
+        System.out.println("!! You catch your own blast for " + selfDmg + " damage!");
+        player.takeDamage(selfDmg, false);
+        return;
     }
+
+    // Must have enemies in sight
+    if (activeEnemies <= 0) {
+        System.out.println("No enemies in sight to throw a grenade at!");
+        return;
+    }
+
+    if (!player.useGrenade()) return;
+
+    // 30% chance it misses the trench
+    if (Math.random() < 0.30) {
+        System.out.println("You throw a grenade but it sails over the enemy trench!");
+        System.out.println("The grenade explodes harmlessly. Wasted!");
+        warRages(false);
+        return;
+    }
+
+    if (countAliveEnemies() == 0) {
+        System.out.println("You throw a grenade, but there are no enemies left.");
+        return;
+    }
+
+    int targets = Math.min(countAliveEnemies(), 1 + (int)(Math.random() * 3));
+    System.out.println("You throw a grenade into the enemy line!");
+
+    for (int i = 0; i < targets; i++) {
+        Enemy target = getRandomAliveEnemy();
+        int damage = 40 + (int)(Math.random() * 31);
+        target.takeDamage(damage);
+        System.out.println("  Blast hits " + target.getType() + " for " + damage + " damage.");
+        if (!target.isAlive()) {
+            System.out.println("  Enemy " + target.getType() + " eliminated!");
+            player.addKill();
+            activeEnemies--;
+            if (activeEnemies < 0) activeEnemies = 0;
+        }
+    }
+
+    warRages(false);
+}
 
     public void restockBunkers() {
         for (Room room : rooms.values()) {
@@ -437,5 +466,13 @@ public class Game {
     // Sleeping makes you hungry
     player.drainHunger(10);
     System.out.println("You feel rested but hungry. (-10 hunger)");
+}
+public void spawnEnemies() {
+    if (countAliveEnemies() == 0) return;
+    int newEnemies = 2 + (int)(Math.random() * 4);
+    newEnemies = Math.min(newEnemies, countAliveEnemies());
+    activeEnemies += newEnemies;
+    activeEnemies = Math.min(activeEnemies, countAliveEnemies());
+    System.out.println(">> " + newEnemies + " enemy soldiers spotted! (" + activeEnemies + " in sight)");
 }
 }

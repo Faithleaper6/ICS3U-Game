@@ -106,6 +106,7 @@ public class CommandParser {
             case "time":
             case "wait":
                 timeManager.advanceTime(player, enemies, allies);
+                game.spawnEnemies();
                 game.restockBunkers();
                 game.warRages(true);
                 break;
