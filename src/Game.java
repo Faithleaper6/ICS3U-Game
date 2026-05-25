@@ -272,10 +272,8 @@ public class Game {
                 return;
             }
             System.out.println("\nYou throw a grenade... inside the bunker?!");
-            System.out.println("!! THE GRENADE BOUNCES OFF THE WALL!");
-            int selfDmg = 40 + (int) (Math.random() * 31);
-            System.out.println("!! You catch your own blast for " + selfDmg + " damage!");
-            player.takeDamage(selfDmg, false);
+            System.out.println("!! The blast has nowhere to go in the enclosed space!");
+            player.kill();
             return;
         }
 

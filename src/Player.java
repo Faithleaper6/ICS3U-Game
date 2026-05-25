@@ -174,6 +174,11 @@ public class Player {
         System.out.println("  >> You took " + actualDamage + " damage! Health: " + health + "/" + maxHealth);
     }
 
+    public void kill() {
+        health = 0;
+        System.out.println("  >> You were killed instantly! Health: " + health + "/" + maxHealth);
+    }
+
     public void heal(int amount) {
         health += amount;
         if (health > maxHealth) {
