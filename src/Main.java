@@ -58,7 +58,7 @@ public class Main {
                 + " allies)");
         System.out.println("\nGear up, soldier. Move out!\n");
 
-        Game game = new Game(numEnemies, numAllies, choice, name, numEnemies);
+        Game game = new Game(numEnemies, numAllies, choice, name);
         game.run();
 
         scanner.close();

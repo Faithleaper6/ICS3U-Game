@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -12,19 +13,19 @@ public class Game {
     private int numAllies;
     private int choice;
     private String playerName;
-    private int activeEnemies = 0;
+    private Map<String, Integer> activeEnemiesByRoom;
 
-    public Game(int numEnemies, int numAllies, int choice, String name, int activeEnemies) {
+    public Game(int numEnemies, int numAllies, int choice, String name) {
         this.numEnemies = numEnemies;
         this.numAllies = numAllies;
         this.choice = choice;
         this.playerName = name;
-        this.activeEnemies = activeEnemies;
         this.rooms = RoomLoader.loadRooms("rooms.json");
 
         this.player = new Player(playerName, 100, 100, 100);
         this.enemies = new ArrayList<>();
         this.allies = new ArrayList<>();
+        this.activeEnemiesByRoom = new HashMap<>();
         this.timeManager = new TimeManager(choice);
 
         createForces();
@@ -120,6 +121,7 @@ public class Game {
 
         if (Math.random() < nextRoom.getEnemyChance() && countAliveEnemies() > 0) {
             System.out.println("\n!! ENEMY CONTACT! You've been spotted!");
+            spotEnemiesInRoom(nextRoom, 1 + (int) (Math.random() * 3));
             incomingFire(nextRoom);
         }
     }
@@ -142,6 +144,7 @@ public class Game {
         System.out.println("\n--- BATTLEFIELD ---");
         System.out.println("Time: Day " + timeManager.getDayCount() + ", " + timeManager.getCurrentTime());
         System.out.println("Enemies alive: " + countAliveEnemies() + "/" + numEnemies);
+        System.out.println("Enemies in sight here: " + countVisibleEnemiesInCurrentRoom());
         System.out.println("Allies alive: " + countAliveAllies() + "/" + numAllies);
     }
 
@@ -191,7 +194,7 @@ public class Game {
         }
 
         // Must have active enemies
-        if (activeEnemies <= 0) {
+        if (countVisibleEnemies(currentRoom) <= 0) {
             System.out.println("No enemies in sight right now. Advance time or move to spot targets.");
             return;
         }
@@ -232,10 +235,7 @@ public class Game {
         if (!target.isAlive()) {
             System.out.println("Enemy " + target.getType() + " eliminated!");
             player.addKill();
-            activeEnemies--;
-            if (activeEnemies < 0) {
-                activeEnemies = 0;
-            }
+            removeVisibleEnemy(currentRoom);
         }
 
         warRages(false);
@@ -248,7 +248,7 @@ public class Game {
             return;
         }
 
-        if (activeEnemies <= 0) {
+        if (countVisibleEnemies(currentRoom) <= 0) {
             System.out.println("No enemies in sight right now. Advance time or move to spot targets.");
             return;
         }
@@ -271,7 +271,7 @@ public class Game {
             System.out.println("Your hunger and exhaustion make it harder to control the weapon.");
         }
 
-        for (int i = 0; i < rounds && countAliveEnemies() > 0; i++) {
+        for (int i = 0; i < rounds && countAliveEnemies() > 0 && countVisibleEnemies(currentRoom) > 0; i++) {
             Enemy target = getRandomAliveEnemy();
             double chance = Math.min(0.90, weapon.getHitChance() + player.getAccuracyBonus() - conditionPenalty);
             chance = Math.max(0.05, chance);
@@ -281,10 +281,7 @@ public class Game {
                 if (!target.isAlive()) {
                     System.out.println("  Enemy " + target.getType() + " eliminated!");
                     player.addKill();
-                    activeEnemies--;
-                    if (activeEnemies < 0) {
-                        activeEnemies = 0;
-                    }
+                    removeVisibleEnemy(currentRoom);
                 }
             }
         }
@@ -307,7 +304,7 @@ public class Game {
         }
 
         // Must have enemies in sight
-        if (activeEnemies <= 0) {
+        if (countVisibleEnemies(room) <= 0) {
             System.out.println("No enemies in sight to throw a grenade at!");
             return;
         }
@@ -329,7 +326,7 @@ public class Game {
             return;
         }
 
-        int targets = Math.min(countAliveEnemies(), 1 + (int) (Math.random() * 3));
+        int targets = Math.min(countVisibleEnemies(room), 1 + (int) (Math.random() * 3));
         System.out.println("You throw a grenade into the enemy line!");
 
         for (int i = 0; i < targets; i++) {
@@ -340,10 +337,7 @@ public class Game {
             if (!target.isAlive()) {
                 System.out.println("  Enemy " + target.getType() + " eliminated!");
                 player.addKill();
-                activeEnemies--;
-                if (activeEnemies < 0) {
-                    activeEnemies = 0;
-                }
+                removeVisibleEnemy(room);
             }
         }
 
@@ -410,7 +404,11 @@ public class Game {
             room = rooms.get(player.getCurrentRoomId());
         }
 
-        int attackers = Math.min(countAliveEnemies(), 1 + (int) (Math.random() * 3));
+        if (countVisibleEnemies(room) <= 0) {
+            spotEnemiesInRoom(room, 1 + (int) (Math.random() * 3));
+        }
+
+        int attackers = Math.min(countVisibleEnemies(room), 1 + (int) (Math.random() * 3));
         double coverMod = room == null ? 0.75 : room.getCoverMod();
 
         for (int i = 0; i < attackers && player.isAlive(); i++) {
@@ -422,6 +420,42 @@ public class Game {
                 int coveredDamage = Math.max(1, (int) (result.getDamage() * coverMod));
                 player.takeDamage(coveredDamage, result.isHeadshot());
             }
+        }
+    }
+
+    private int countVisibleEnemiesInCurrentRoom() {
+        return countVisibleEnemies(rooms.get(player.getCurrentRoomId()));
+    }
+
+    private int countVisibleEnemies(Room room) {
+        if (room == null) {
+            return 0;
+        }
+
+        int visible = activeEnemiesByRoom.getOrDefault(room.getId(), 0);
+        visible = Math.min(visible, countAliveEnemies());
+        activeEnemiesByRoom.put(room.getId(), visible);
+        return visible;
+    }
+
+    private void spotEnemiesInRoom(Room room, int amount) {
+        if (room == null || amount <= 0 || countAliveEnemies() == 0) {
+            return;
+        }
+
+        int currentVisible = countVisibleEnemies(room);
+        int newVisible = Math.min(currentVisible + amount, countAliveEnemies());
+        activeEnemiesByRoom.put(room.getId(), newVisible);
+    }
+
+    private void removeVisibleEnemy(Room room) {
+        if (room == null) {
+            return;
+        }
+
+        int visible = countVisibleEnemies(room);
+        if (visible > 0) {
+            activeEnemiesByRoom.put(room.getId(), visible - 1);
         }
     }
 
@@ -532,11 +566,12 @@ public class Game {
         if (countAliveEnemies() == 0) {
             return;
         }
+        Room currentRoom = rooms.get(player.getCurrentRoomId());
         int newEnemies = 2 + (int) (Math.random() * 4);
         newEnemies = Math.min(newEnemies, countAliveEnemies());
-        activeEnemies += newEnemies;
-        activeEnemies = Math.min(activeEnemies, countAliveEnemies());
-        System.out.println(">> " + newEnemies + " enemy soldiers spotted! (" + activeEnemies + " in sight)");
+        spotEnemiesInRoom(currentRoom, newEnemies);
+        System.out.println(">> " + newEnemies + " enemy soldiers spotted here! (" + countVisibleEnemies(currentRoom)
+                + " in sight)");
     }
 
     private boolean trenchDanger() {
