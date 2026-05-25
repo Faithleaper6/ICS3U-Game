@@ -326,17 +326,25 @@ public class Game {
         }
 
         Room currentRoom = rooms.get(player.getCurrentRoomId());
+        boolean inBunker = currentRoom != null && currentRoom.getType().equals("bunker");
+
         double incomingChance = majorEvent ? 0.35 : 0.18;
         incomingChance += choice * 0.03;
         if (currentRoom != null) {
             incomingChance += currentRoom.getEnemyChance() * 0.25;
         }
 
+
+        if (inBunker) {
+            incomingChance *= 0.1; 
+        }
+
         if (Math.random() < incomingChance) {
-            System.out.println("\nThe battlefield erupts around you!");
+            if (inBunker) System.out.println("\nA bullet ricochets near the bunker entrance!");
+            else System.out.println("\nThe battlefield erupts around you!");
             incomingFire(currentRoom);
             return;
-        }
+}
 
         resolveDistantFighting(majorEvent);
     }
@@ -455,30 +463,30 @@ public class Game {
     System.out.println("\nYou lean against the bunker wall and close your eyes...");
     System.out.println("Zzzzz...\n");
 
-    // Restore energy
+
     int restored = 30 + (int)(Math.random() * 21);
     player.drainEnergy(-restored);
     System.out.println("Energy restored! +" + restored + " energy.");
 
-    // Sleeping is very dangerous — triple war rounds
+
     warRages(true);
     warRages(true);
     warRages(true);
 
-    // High chance of being woken up by attack
+
     if (Math.random() < 0.40) {
         System.out.println("\n!! You're jolted awake by an explosion nearby!");
         int dmg = 10 + (int)(Math.random() * 15);
         player.takeDamage(dmg, false);
     }
 
-    // Enemies may sneak up
+ 
     if (Math.random() < 0.25 && countAliveEnemies() > 0) {
         System.out.println("!! An enemy found your bunker while you slept!");
         incomingFire(room);
     }
 
-    // Sleeping makes you hungry
+
     player.drainHunger(10);
     System.out.println("You feel rested but hungry. (-10 hunger)");
 }
@@ -489,5 +497,42 @@ public void spawnEnemies() {
     activeEnemies += newEnemies;
     activeEnemies = Math.min(activeEnemies, countAliveEnemies());
     System.out.println(">> " + newEnemies + " enemy soldiers spotted! (" + activeEnemies + " in sight)");
+}
+private boolean trenchDanger() {
+    Room room = rooms.get(player.getCurrentRoomId());
+    boolean inBunker = room != null && room.getType().equals("bunker");
+
+    // Base chance: Easy=0.5%, Medium=0.8%, Hard=1.0%
+    double dangerChance;
+    if (choice == 1) dangerChance = 0.005;
+    else if (choice == 2) dangerChance = 0.008;
+    else dangerChance = 0.010;
+
+    // Much safer in bunker
+    if (inBunker) dangerChance *= 0.15;
+
+    double roll = Math.random();
+
+    if (roll < dangerChance * 0.50) {
+        int dmg = 20 + (int)(Math.random() * 25);
+        System.out.println("\n!! A GRENADE lands near you!");
+        player.takeDamage(dmg, false);
+        return true;
+    } else if (roll < dangerChance * 0.80) {
+        int dmg = 15 + (int)(Math.random() * 20);
+        System.out.println("\n!! MORTAR STRIKE near your position!");
+        player.takeDamage(dmg, false);
+        return true;
+    } else if (roll < dangerChance) {
+        if (Math.random() < 0.5) {
+            System.out.println("\n!! A sniper round cracks past your head!");
+        } else {
+            int dmg = 8 + (int)(Math.random() * 12);
+            System.out.println("\n!! A sniper round clips you!");
+            player.takeDamage(dmg, false);
+        }
+        return true;
+    }
+    return false;
 }
 }
