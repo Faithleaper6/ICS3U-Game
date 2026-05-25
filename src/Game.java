@@ -457,7 +457,6 @@ public class Game {
     }
     public void sleep() {
     Room room = rooms.get(player.getCurrentRoomId());
-
     if (!room.getType().equals("bunker")) {
         System.out.println("You can't sleep in the open! Find a bunker first.");
         return;
@@ -466,29 +465,30 @@ public class Game {
     System.out.println("\nYou lean against the bunker wall and close your eyes...");
     System.out.println("Zzzzz...\n");
 
-
     int restored = 30 + (int)(Math.random() * 21);
     player.drainEnergy(-restored);
     System.out.println("Energy restored! +" + restored + " energy.");
 
-
+    // More war rounds on harder difficulty
     warRages(true);
     warRages(true);
-    warRages(true);
+    if (choice >= 2) warRages(true);     // extra round on medium+
+    if (choice == 3) warRages(true);     // extra round on hard
 
-
-    if (Math.random() < 0.40) {
-        System.out.println("\n!! You're jolted awake by an explosion nearby!");
+    // Explosion chance scales with difficulty
+    double explosionChance = choice == 1 ? 0.20 : choice == 2 ? 0.35 : 0.50;
+    if (Math.random() < explosionChance) {
+        System.out.println("\n!! Jolted awake by an explosion!");
         int dmg = 10 + (int)(Math.random() * 15);
         player.takeDamage(dmg, false);
     }
 
- 
-    if (Math.random() < 0.25 && countAliveEnemies() > 0) {
+    // Enemy sneak chance scales
+    double sneakChance = choice == 1 ? 0.10 : choice == 2 ? 0.20 : 0.35;
+    if (Math.random() < sneakChance && countAliveEnemies() > 0) {
         System.out.println("!! An enemy found your bunker while you slept!");
         incomingFire(room);
     }
-
 
     player.drainHunger(10);
     System.out.println("You feel rested but hungry. (-10 hunger)");
