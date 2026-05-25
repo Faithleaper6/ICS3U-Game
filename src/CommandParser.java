@@ -1,10 +1,8 @@
-import java.util.ArrayList;
 import java.util.Map;
 
 public class CommandParser {
 
     public static void parse(String input, Player player, Map<String, Room> rooms,
-            ArrayList<Enemy> enemies, ArrayList<Boolean> allies,
             TimeManager timeManager, Game game) {
 
         String[] words = input.trim().toLowerCase().split("\\s+");
@@ -105,7 +103,7 @@ public class CommandParser {
             case "advance":
             case "time":
             case "wait":
-                timeManager.advanceTime(player, enemies, allies);
+                timeManager.advanceTime(player);
                 game.spawnEnemies();
                 game.restockBunkers();
                 game.warRages(true);
@@ -114,8 +112,10 @@ public class CommandParser {
             case "help":
                 printHelp();
                 break;
-                case "sleep": case "rest":
-                 game.sleep();
+
+            case "sleep":
+            case "rest":
+                game.sleep();
                 break;
 
             default:

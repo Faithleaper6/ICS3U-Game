@@ -21,8 +21,9 @@ public class Main {
         while (choice < 1 || choice > 3) {
             if (scanner.hasNextInt()) {
                 choice = scanner.nextInt();
-                if (choice < 1 || choice > 3)
+                if (choice < 1 || choice > 3) {
                     System.out.print("Enter 1, 2, or 3: ");
+                }
             } else {
                 scanner.next();
                 System.out.print("Enter 1, 2, or 3: ");

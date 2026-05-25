@@ -12,16 +12,19 @@ public class RoomLoader {
             String json = readFile(filepath);
             // Remove outer braces
             json = json.trim();
-            if (json.startsWith("{"))
+            if (json.startsWith("{")) {
                 json = json.substring(1);
-            if (json.endsWith("}"))
+            }
+            if (json.endsWith("}")) {
                 json = json.substring(0, json.length() - 1);
+            }
 
             int pos = 0;
             while (pos < json.length()) {
                 int keyStart = json.indexOf("\"", pos);
-                if (keyStart == -1)
+                if (keyStart == -1) {
                     break;
+                }
                 int keyEnd = json.indexOf("\"", keyStart + 1);
                 String roomId = json.substring(keyStart + 1, keyEnd);
 
@@ -62,8 +65,9 @@ public class RoomLoader {
             int ePos = 0;
             while (ePos < exitsJson.length()) {
                 int dStart = exitsJson.indexOf("\"", ePos);
-                if (dStart == -1)
+                if (dStart == -1) {
                     break;
+                }
                 int dEnd = exitsJson.indexOf("\"", dStart + 1);
                 String direction = exitsJson.substring(dStart + 1, dEnd);
 
@@ -85,8 +89,9 @@ public class RoomLoader {
             int iPos = 0;
             while (iPos < itemsJson.length()) {
                 int iObjStart = itemsJson.indexOf("{", iPos);
-                if (iObjStart == -1)
+                if (iObjStart == -1) {
                     break;
+                }
                 int iObjEnd = findMatchingBrace(itemsJson, iObjStart);
                 String itemJson = itemsJson.substring(iObjStart, iObjEnd + 1);
 
@@ -108,8 +113,9 @@ public class RoomLoader {
     private static String extractString(String json, String key) {
         String search = "\"" + key + "\"";
         int idx = json.indexOf(search);
-        if (idx == -1)
+        if (idx == -1) {
             return null;
+        }
         // Find the colon, then the opening quote of the value
         int colonIdx = json.indexOf(":", idx + search.length());
         int valStart = json.indexOf("\"", colonIdx);
@@ -124,8 +130,9 @@ public class RoomLoader {
     private static double extractDouble(String json, String key) {
         String search = "\"" + key + "\"";
         int idx = json.indexOf(search);
-        if (idx == -1)
+        if (idx == -1) {
             return 0.0;
+        }
         int colonIdx = json.indexOf(":", idx + search.length());
         // Read the number after the colon
         int numStart = colonIdx + 1;
@@ -147,12 +154,13 @@ public class RoomLoader {
     private static int findMatchingBrace(String s, int openPos) {
         int depth = 0;
         for (int i = openPos; i < s.length(); i++) {
-            if (s.charAt(i) == '{')
+            if (s.charAt(i) == '{') {
                 depth++;
-            else if (s.charAt(i) == '}') {
+            } else if (s.charAt(i) == '}') {
                 depth--;
-                if (depth == 0)
+                if (depth == 0) {
                     return i;
+                }
             }
         }
         return s.length() - 1;
@@ -161,12 +169,13 @@ public class RoomLoader {
     private static int findMatchingBracket(String s, int openPos) {
         int depth = 0;
         for (int i = openPos; i < s.length(); i++) {
-            if (s.charAt(i) == '[')
+            if (s.charAt(i) == '[') {
                 depth++;
-            else if (s.charAt(i) == ']') {
+            } else if (s.charAt(i) == ']') {
                 depth--;
-                if (depth == 0)
+                if (depth == 0) {
                     return i;
+                }
             }
         }
         return s.length() - 1;
@@ -174,60 +183,12 @@ public class RoomLoader {
 
     private static String readFile(String filepath) throws IOException {
         StringBuilder sb = new StringBuilder();
-        BufferedReader reader = new BufferedReader(new FileReader(filepath));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            sb.append(line).append("\n");
+        try (BufferedReader reader = new BufferedReader(new FileReader(filepath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line).append("\n");
+            }
         }
-        reader.close();
         return sb.toString();
     }
 }
-
-/*
- * import java.io.FileReader;
- * import java.util.*;
- * import com.google.gson.*;
- * 
- * public class RoomLoader {
- * public static HashMap<String, Room> loadRooms(String filePath) {
- * Map<String, Gear> rooms = new HashMap<>();
- * try {
- * Gson gson = new Gson();
- * JsonObject jsonObject = gson.fromJson(new FileReader(filePath),
- * JsonObject.class);
- * 
- * for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
- * String roomId = entry.getKey();
- * JsonObject roomData = entry.getValue().getAsJsonObject();
- * 
- * String name = roomData.get("name").getAsString();
- * String description = roomData.get("description").getAsString();
- * 
- * Map<String, String> exits = new HashMap<>();
- * JsonObject exitsJson = roomData.getAsJsonObject("exits");
- * for (Map.Entry<String, JsonElement> exit : exitsJson.entrySet()) {
- * exits.put(exit.getKey(), exit.getValue().getAsString());
- * }
- * 
- * List<Weapon> items = new ArrayList<>();
- * JsonArray itemsJson = roomData.getAsJsonArray("items");
- * for (JsonElement itemElement : itemsJson) {
- * JsonObject itemObj = itemElement.getAsJsonObject();
- * String itemId = itemObj.get("id").getAsString();
- * String itemName = itemObj.get("name").getAsString();
- * String itemDescription = itemObj.get("description").getAsString();
- * items.add(new Weapon(itemId, itemName, itemDescription));
- * }
- * 
- * Gear room = new Gear(roomId, name, description);
- * rooms.put(roomId, room);
- * }
- * } catch (Exception e) {
- * e.printStackTrace();
- * }
- * return rooms;
- * }
- * }
- * /*
- */

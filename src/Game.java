@@ -14,7 +14,7 @@ public class Game {
     private String playerName;
     private int activeEnemies = 0;
 
-    public Game(int numEnemies, int numAllies, int choice, String name,int activeEnemies) {
+    public Game(int numEnemies, int numAllies, int choice, String name, int activeEnemies) {
         this.numEnemies = numEnemies;
         this.numAllies = numAllies;
         this.choice = choice;
@@ -50,7 +50,7 @@ public class Game {
                         continue;
                     }
                 }
-                CommandParser.parse(input, player, rooms, enemies, allies, timeManager, this);
+                CommandParser.parse(input, player, rooms, timeManager, this);
             }
 
             if (!player.isAlive()) {
@@ -177,58 +177,60 @@ public class Game {
     }
 
     public void shootEnemy() {
-    Room currentRoom = rooms.get(player.getCurrentRoomId());
+        Room currentRoom = rooms.get(player.getCurrentRoomId());
 
-    // Can't shoot from bunker
-    if (currentRoom.getType().equals("bunker")) {
-        System.out.println("You can't shoot from inside the bunker! Go back to the trench first.");
-        return;
-    }
+        // Can't shoot from bunker
+        if (currentRoom.getType().equals("bunker")) {
+            System.out.println("You can't shoot from inside the bunker! Go back to the trench first.");
+            return;
+        }
 
-    // Must have active enemies
-    if (activeEnemies <= 0) {
-        System.out.println("No enemies in sight right now. Advance time or move to spot targets.");
-        return;
-    }
+        // Must have active enemies
+        if (activeEnemies <= 0) {
+            System.out.println("No enemies in sight right now. Advance time or move to spot targets.");
+            return;
+        }
 
-    Enemy target = getFirstAliveEnemy();
-    if (target == null) {
-        System.out.println("There are no enemies left to shoot.");
-        return;
-    }
+        Enemy target = getFirstAliveEnemy();
+        if (target == null) {
+            System.out.println("There are no enemies left to shoot.");
+            return;
+        }
 
-    Weapon weapon = player.getCurrentWeapon();
-    if (!weapon.fireRound()) {
-        return;
-    }
+        Weapon weapon = player.getCurrentWeapon();
+        if (!weapon.fireRound()) {
+            return;
+        }
 
-    double chance = weapon.getHitChance() + player.getAccuracyBonus();
-    if (currentRoom != null) {
-        chance += currentRoom.getAccuracyBonus();
-    }
-    chance = Math.min(0.95, Math.max(0.05, chance));
+        double chance = weapon.getHitChance() + player.getAccuracyBonus();
+        if (currentRoom != null) {
+            chance += currentRoom.getAccuracyBonus();
+        }
+        chance = Math.min(0.95, Math.max(0.05, chance));
 
-    System.out.println("You fire your " + weapon.getName() + " at a " + target.getType() + "...");
-    if (Math.random() > chance) {
-        System.out.println("You missed!");
+        System.out.println("You fire your " + weapon.getName() + " at a " + target.getType() + "...");
+        if (Math.random() > chance) {
+            System.out.println("You missed!");
+            warRages(false);
+            return;
+        }
+
+        boolean headshot = Math.random() < weapon.getHeadshotChance();
+        int damage = headshot ? weapon.getHeadshotDamage() : weapon.getDamage();
+        target.takeDamage(damage);
+        System.out.println((headshot ? "HEADSHOT! " : "Hit! ") + "Dealt " + damage + " damage.");
+
+        if (!target.isAlive()) {
+            System.out.println("Enemy " + target.getType() + " eliminated!");
+            player.addKill();
+            activeEnemies--;
+            if (activeEnemies < 0) {
+                activeEnemies = 0;
+            }
+        }
+
         warRages(false);
-        return;
     }
-
-    boolean headshot = Math.random() < weapon.getHeadshotChance();
-    int damage = headshot ? weapon.getHeadshotDamage() : weapon.getDamage();
-    target.takeDamage(damage);
-    System.out.println((headshot ? "HEADSHOT! " : "Hit! ") + "Dealt " + damage + " damage.");
-
-    if (!target.isAlive()) {
-        System.out.println("Enemy " + target.getType() + " eliminated!");
-        player.addKill();
-        activeEnemies--;
-        if (activeEnemies < 0) activeEnemies = 0;
-    }
-
-    warRages(false);
-}
 
     public void magDump() {
         Weapon weapon = player.getCurrentWeapon();
@@ -262,58 +264,64 @@ public class Game {
     }
 
     public void throwGrenade() {
-    Room room = rooms.get(player.getCurrentRoomId());
+        Room room = rooms.get(player.getCurrentRoomId());
 
-    // Throwing in bunker hits YOU
-    if (room.getType().equals("bunker")) {
-        if (!player.useGrenade()) return;
-        System.out.println("\nYou throw a grenade... inside the bunker?!");
-        System.out.println("!! THE GRENADE BOUNCES OFF THE WALL!");
-        int selfDmg = 40 + (int)(Math.random() * 31);
-        System.out.println("!! You catch your own blast for " + selfDmg + " damage!");
-        player.takeDamage(selfDmg, false);
-        return;
-    }
-
-    // Must have enemies in sight
-    if (activeEnemies <= 0) {
-        System.out.println("No enemies in sight to throw a grenade at!");
-        return;
-    }
-
-    if (!player.useGrenade()) return;
-
-    // 30% chance it misses the trench
-    if (Math.random() < 0.30) {
-        System.out.println("You throw a grenade but it sails over the enemy trench!");
-        System.out.println("The grenade explodes harmlessly. Wasted!");
-        warRages(false);
-        return;
-    }
-
-    if (countAliveEnemies() == 0) {
-        System.out.println("You throw a grenade, but there are no enemies left.");
-        return;
-    }
-
-    int targets = Math.min(countAliveEnemies(), 1 + (int)(Math.random() * 3));
-    System.out.println("You throw a grenade into the enemy line!");
-
-    for (int i = 0; i < targets; i++) {
-        Enemy target = getRandomAliveEnemy();
-        int damage = 40 + (int)(Math.random() * 31);
-        target.takeDamage(damage);
-        System.out.println("  Blast hits " + target.getType() + " for " + damage + " damage.");
-        if (!target.isAlive()) {
-            System.out.println("  Enemy " + target.getType() + " eliminated!");
-            player.addKill();
-            activeEnemies--;
-            if (activeEnemies < 0) activeEnemies = 0;
+        // Throwing in bunker hits YOU
+        if (room.getType().equals("bunker")) {
+            if (!player.useGrenade()) {
+                return;
+            }
+            System.out.println("\nYou throw a grenade... inside the bunker?!");
+            System.out.println("!! THE GRENADE BOUNCES OFF THE WALL!");
+            int selfDmg = 40 + (int) (Math.random() * 31);
+            System.out.println("!! You catch your own blast for " + selfDmg + " damage!");
+            player.takeDamage(selfDmg, false);
+            return;
         }
-    }
 
-    warRages(false);
-}
+        // Must have enemies in sight
+        if (activeEnemies <= 0) {
+            System.out.println("No enemies in sight to throw a grenade at!");
+            return;
+        }
+
+        if (!player.useGrenade()) {
+            return;
+        }
+
+        // 30% chance it misses the trench
+        if (Math.random() < 0.30) {
+            System.out.println("You throw a grenade but it sails over the enemy trench!");
+            System.out.println("The grenade explodes harmlessly. Wasted!");
+            warRages(false);
+            return;
+        }
+
+        if (countAliveEnemies() == 0) {
+            System.out.println("You throw a grenade, but there are no enemies left.");
+            return;
+        }
+
+        int targets = Math.min(countAliveEnemies(), 1 + (int) (Math.random() * 3));
+        System.out.println("You throw a grenade into the enemy line!");
+
+        for (int i = 0; i < targets; i++) {
+            Enemy target = getRandomAliveEnemy();
+            int damage = 40 + (int) (Math.random() * 31);
+            target.takeDamage(damage);
+            System.out.println("  Blast hits " + target.getType() + " for " + damage + " damage.");
+            if (!target.isAlive()) {
+                System.out.println("  Enemy " + target.getType() + " eliminated!");
+                player.addKill();
+                activeEnemies--;
+                if (activeEnemies < 0) {
+                    activeEnemies = 0;
+                }
+            }
+        }
+
+        warRages(false);
+    }
 
     public void restockBunkers() {
         for (Room room : rooms.values()) {
@@ -340,15 +348,18 @@ public class Game {
 
 
         if (inBunker) {
-            incomingChance *= 0.1; 
+            incomingChance *= 0.1;
         }
 
         if (Math.random() < incomingChance) {
-            if (inBunker) System.out.println("\nA bullet ricochets near the bunker entrance!");
-            else System.out.println("\nThe battlefield erupts around you!");
+            if (inBunker) {
+                System.out.println("\nA bullet ricochets near the bunker entrance!");
+            } else {
+                System.out.println("\nThe battlefield erupts around you!");
+            }
             incomingFire(currentRoom);
             return;
-}
+        }
 
         resolveDistantFighting(majorEvent);
     }
@@ -456,87 +467,102 @@ public class Game {
             }
         }
     }
+
     public void sleep() {
-    Room room = rooms.get(player.getCurrentRoomId());
-    if (!room.getType().equals("bunker")) {
-        System.out.println("You can't sleep in the open! Find a bunker first.");
-        return;
-    }
+        Room room = rooms.get(player.getCurrentRoomId());
+        if (!room.getType().equals("bunker")) {
+            System.out.println("You can't sleep in the open! Find a bunker first.");
+            return;
+        }
 
-    System.out.println("\nYou lean against the bunker wall and close your eyes...");
-    System.out.println("Zzzzz...\n");
+        System.out.println("\nYou lean against the bunker wall and close your eyes...");
+        System.out.println("Zzzzz...\n");
 
-    int restored = 30 + (int)(Math.random() * 21);
-    player.drainEnergy(-restored);
-    System.out.println("Energy restored! +" + restored + " energy.");
+        int restored = 30 + (int) (Math.random() * 21);
+        player.drainEnergy(-restored);
+        System.out.println("Energy restored! +" + restored + " energy.");
 
-    // More war rounds on harder difficulty
-    warRages(true);
-    warRages(true);
-    if (choice >= 2) warRages(true);     // extra round on medium+
-    if (choice == 3) warRages(true);     // extra round on hard
+        // More war rounds on harder difficulty
+        warRages(true);
+        warRages(true);
+        if (choice >= 2) {
+            warRages(true);
+        }
+        if (choice == 3) {
+            warRages(true);
+        }
 
-    // Explosion chance scales with difficulty
-    double explosionChance = choice == 1 ? 0.20 : choice == 2 ? 0.35 : 0.50;
-    if (Math.random() < explosionChance) {
-        System.out.println("\n!! Jolted awake by an explosion!");
-        int dmg = 10 + (int)(Math.random() * 15);
-        player.takeDamage(dmg, false);
-    }
-
-    // Enemy sneak chance scales
-    double sneakChance = choice == 1 ? 0.10 : choice == 2 ? 0.20 : 0.35;
-    if (Math.random() < sneakChance && countAliveEnemies() > 0) {
-        System.out.println("!! An enemy found your bunker while you slept!");
-        incomingFire(room);
-    }
-
-    player.drainHunger(10);
-    System.out.println("You feel rested but hungry. (-10 hunger)");
-}
-public void spawnEnemies() {
-    if (countAliveEnemies() == 0) return;
-    int newEnemies = 2 + (int)(Math.random() * 4);
-    newEnemies = Math.min(newEnemies, countAliveEnemies());
-    activeEnemies += newEnemies;
-    activeEnemies = Math.min(activeEnemies, countAliveEnemies());
-    System.out.println(">> " + newEnemies + " enemy soldiers spotted! (" + activeEnemies + " in sight)");
-}
-private boolean trenchDanger() {
-    Room room = rooms.get(player.getCurrentRoomId());
-    boolean inBunker = room != null && room.getType().equals("bunker");
-
-    // Base chance: Easy=0.5%, Medium=0.8%, Hard=1.0%
-    double dangerChance;
-    if (choice == 1) dangerChance = 0.005;
-    else if (choice == 2) dangerChance = 0.008;
-    else dangerChance = 0.010;
-
-    // Much safer in bunker
-    if (inBunker) dangerChance *= 0.15;
-
-    double roll = Math.random();
-
-    if (roll < dangerChance * 0.50) {
-        int dmg = 20 + (int)(Math.random() * 25);
-        System.out.println("\n!! A GRENADE lands near you!");
-        player.takeDamage(dmg, false);
-        return true;
-    } else if (roll < dangerChance * 0.80) {
-        int dmg = 15 + (int)(Math.random() * 20);
-        System.out.println("\n!! MORTAR STRIKE near your position!");
-        player.takeDamage(dmg, false);
-        return true;
-    } else if (roll < dangerChance) {
-        if (Math.random() < 0.5) {
-            System.out.println("\n!! A sniper round cracks past your head!");
-        } else {
-            int dmg = 8 + (int)(Math.random() * 12);
-            System.out.println("\n!! A sniper round clips you!");
+        // Explosion chance scales with difficulty
+        double explosionChance = choice == 1 ? 0.20 : choice == 2 ? 0.35 : 0.50;
+        if (Math.random() < explosionChance) {
+            System.out.println("\n!! Jolted awake by an explosion!");
+            int dmg = 10 + (int) (Math.random() * 15);
             player.takeDamage(dmg, false);
         }
-        return true;
+
+        // Enemy sneak chance scales
+        double sneakChance = choice == 1 ? 0.10 : choice == 2 ? 0.20 : 0.35;
+        if (Math.random() < sneakChance && countAliveEnemies() > 0) {
+            System.out.println("!! An enemy found your bunker while you slept!");
+            incomingFire(room);
+        }
+
+        player.drainHunger(10);
+        System.out.println("You feel rested but hungry. (-10 hunger)");
     }
-    return false;
-}
+
+    public void spawnEnemies() {
+        if (countAliveEnemies() == 0) {
+            return;
+        }
+        int newEnemies = 2 + (int) (Math.random() * 4);
+        newEnemies = Math.min(newEnemies, countAliveEnemies());
+        activeEnemies += newEnemies;
+        activeEnemies = Math.min(activeEnemies, countAliveEnemies());
+        System.out.println(">> " + newEnemies + " enemy soldiers spotted! (" + activeEnemies + " in sight)");
+    }
+
+    private boolean trenchDanger() {
+        Room room = rooms.get(player.getCurrentRoomId());
+        boolean inBunker = room != null && room.getType().equals("bunker");
+
+        // Base chance: Easy=0.5%, Medium=0.8%, Hard=1.0%
+        double dangerChance;
+        if (choice == 1) {
+            dangerChance = 0.005;
+        } else if (choice == 2) {
+            dangerChance = 0.008;
+        } else {
+            dangerChance = 0.010;
+        }
+
+        // Much safer in bunker
+        if (inBunker) {
+            dangerChance *= 0.15;
+        }
+
+        double roll = Math.random();
+
+        if (roll < dangerChance * 0.50) {
+            int dmg = 20 + (int) (Math.random() * 25);
+            System.out.println("\n!! A GRENADE lands near you!");
+            player.takeDamage(dmg, false);
+            return true;
+        } else if (roll < dangerChance * 0.80) {
+            int dmg = 15 + (int) (Math.random() * 20);
+            System.out.println("\n!! MORTAR STRIKE near your position!");
+            player.takeDamage(dmg, false);
+            return true;
+        } else if (roll < dangerChance) {
+            if (Math.random() < 0.5) {
+                System.out.println("\n!! A sniper round cracks past your head!");
+            } else {
+                int dmg = 8 + (int) (Math.random() * 12);
+                System.out.println("\n!! A sniper round clips you!");
+                player.takeDamage(dmg, false);
+            }
+            return true;
+        }
+        return false;
+    }
 }

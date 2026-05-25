@@ -1,5 +1,4 @@
 public class Bunker {
-    //
     public static void search(Player player) {
         System.out.println("\nYou cautiously enter a bunker and search around...");
         getLoot(player);
@@ -71,10 +70,12 @@ public class Bunker {
 
     private static Weapon getRandomWeapon() {
         double r = Math.random();
-        if (r < 0.40)
+        if (r < 0.40) {
             return Weapon.createRifle();
-        if (r < 0.70)
+        }
+        if (r < 0.70) {
             return Weapon.createSMG();
+        }
         return Weapon.createSniper();
     }
 }

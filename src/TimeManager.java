@@ -1,5 +1,3 @@
-import java.util.*;
-
 public class TimeManager {
     private String[] times = { "Morning", "Noon", "Afternoon", "Night" };
     private int currentTimeIndex;
@@ -20,7 +18,7 @@ public class TimeManager {
         return dayCount;
     }
 
-    public void advanceTime(Player player, ArrayList<Enemy> enemies, ArrayList<Boolean> allies) {
+    public void advanceTime(Player player) {
         currentTimeIndex = (currentTimeIndex + 1) % times.length;
         if (currentTimeIndex == 0) {
             dayCount++;
