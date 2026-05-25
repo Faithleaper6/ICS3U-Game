@@ -151,10 +151,13 @@ public class Game {
             System.out.println("There is nowhere useful to search.");
             return;
         }
+        boolean inBunker = currentRoom.getType().equals("bunker");
 
         if (currentRoom.isSearched()) {
             System.out.println("You already searched this area.");
-            warRages(false);
+            if (!inBunker) {
+                warRages(false);
+            }
             return;
         }
 
@@ -162,7 +165,7 @@ public class Game {
         player.drainEnergy(2);
         player.drainHunger(1);
 
-        if (currentRoom.getType().equals("bunker")) {
+        if (inBunker) {
             Bunker.search(player);
         } else if (!currentRoom.getItems().isEmpty()) {
             System.out.println("\nYou search the area and find:");
@@ -173,7 +176,9 @@ public class Game {
             System.out.println("\nYou search carefully, but find nothing useful.");
         }
 
-        warRages(false);
+        if (!inBunker) {
+            warRages(false);
+        }
     }
 
     public void shootEnemy() {
