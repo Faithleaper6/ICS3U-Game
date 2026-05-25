@@ -173,43 +173,58 @@ public class Game {
     }
 
     public void shootEnemy() {
-        Enemy target = getFirstAliveEnemy();
-        if (target == null) {
-            System.out.println("There are no enemies left to shoot.");
-            return;
-        }
+    Room currentRoom = rooms.get(player.getCurrentRoomId());
 
-        Room currentRoom = rooms.get(player.getCurrentRoomId());
-        Weapon weapon = player.getCurrentWeapon();
-        if (!weapon.fireRound()) {
-            return;
-        }
-
-        double chance = weapon.getHitChance() + player.getAccuracyBonus();
-        if (currentRoom != null) {
-            chance += currentRoom.getAccuracyBonus();
-        }
-        chance = Math.min(0.95, Math.max(0.05, chance));
-
-        System.out.println("You fire your " + weapon.getName() + " at a " + target.getType() + "...");
-        if (Math.random() > chance) {
-            System.out.println("You missed!");
-            warRages(false);
-            return;
-        }
-
-        boolean headshot = Math.random() < weapon.getHeadshotChance();
-        int damage = headshot ? weapon.getHeadshotDamage() : weapon.getDamage();
-        target.takeDamage(damage);
-        System.out.println((headshot ? "HEADSHOT! " : "Hit! ") + "Dealt " + damage + " damage.");
-
-        if (!target.isAlive()) {
-            System.out.println("Enemy " + target.getType() + " eliminated!");
-            player.addKill();
-        }
-
-        warRages(false);
+    // Can't shoot from bunker
+    if (currentRoom.getType().equals("bunker")) {
+        System.out.println("You can't shoot from inside the bunker! Go back to the trench first.");
+        return;
     }
+
+    // Must have active enemies
+    if (activeEnemies <= 0) {
+        System.out.println("No enemies in sight right now. Advance time or move to spot targets.");
+        return;
+    }
+
+    Enemy target = getFirstAliveEnemy();
+    if (target == null) {
+        System.out.println("There are no enemies left to shoot.");
+        return;
+    }
+
+    Weapon weapon = player.getCurrentWeapon();
+    if (!weapon.fireRound()) {
+        return;
+    }
+
+    double chance = weapon.getHitChance() + player.getAccuracyBonus();
+    if (currentRoom != null) {
+        chance += currentRoom.getAccuracyBonus();
+    }
+    chance = Math.min(0.95, Math.max(0.05, chance));
+
+    System.out.println("You fire your " + weapon.getName() + " at a " + target.getType() + "...");
+    if (Math.random() > chance) {
+        System.out.println("You missed!");
+        warRages(false);
+        return;
+    }
+
+    boolean headshot = Math.random() < weapon.getHeadshotChance();
+    int damage = headshot ? weapon.getHeadshotDamage() : weapon.getDamage();
+    target.takeDamage(damage);
+    System.out.println((headshot ? "HEADSHOT! " : "Hit! ") + "Dealt " + damage + " damage.");
+
+    if (!target.isAlive()) {
+        System.out.println("Enemy " + target.getType() + " eliminated!");
+        player.addKill();
+        activeEnemies--;
+        if (activeEnemies < 0) activeEnemies = 0;
+    }
+
+    warRages(false);
+}
 
     public void magDump() {
         Weapon weapon = player.getCurrentWeapon();
