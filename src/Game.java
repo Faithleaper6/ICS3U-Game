@@ -47,6 +47,9 @@ public class Game {
         while (player.isAlive() && countAliveEnemies() > 0) {
             System.out.print("> ");
             String input = scanner.nextLine();
+             if (trenchDanger()) {
+        if (!player.isAlive()) continue;
+    }
             commandParser.parse(input, player, rooms, enemies, allies, timeManager, this);
         }
 
