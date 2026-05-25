@@ -207,13 +207,17 @@ public class Game {
             return;
         }
 
-        double chance = weapon.getHitChance() + player.getAccuracyBonus();
+        double conditionPenalty = player.getConditionAccuracyPenalty();
+        double chance = weapon.getHitChance() + player.getAccuracyBonus() - conditionPenalty;
         if (currentRoom != null) {
             chance += currentRoom.getAccuracyBonus();
         }
         chance = Math.min(0.95, Math.max(0.05, chance));
 
         System.out.println("You fire your " + weapon.getName() + " at a " + target.getType() + "...");
+        if (conditionPenalty > 0) {
+            System.out.println("Your hunger and exhaustion make it harder to aim.");
+        }
         if (Math.random() > chance) {
             System.out.println("You missed!");
             warRages(false);
@@ -262,10 +266,15 @@ public class Game {
 
         int rounds = weapon.fireBurst(Math.min(8, weapon.getCurrentAmmo()));
         System.out.println("You dump " + rounds + " rounds from the " + weapon.getName() + "!");
+        double conditionPenalty = player.getConditionAccuracyPenalty();
+        if (conditionPenalty > 0) {
+            System.out.println("Your hunger and exhaustion make it harder to control the weapon.");
+        }
 
         for (int i = 0; i < rounds && countAliveEnemies() > 0; i++) {
             Enemy target = getRandomAliveEnemy();
-            double chance = Math.min(0.90, weapon.getHitChance() + player.getAccuracyBonus());
+            double chance = Math.min(0.90, weapon.getHitChance() + player.getAccuracyBonus() - conditionPenalty);
+            chance = Math.max(0.05, chance);
             if (Math.random() < chance) {
                 target.takeDamage(weapon.getDamage());
                 System.out.println("  Round hits " + target.getType() + " for " + weapon.getDamage() + " damage.");

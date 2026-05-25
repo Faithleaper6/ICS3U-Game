@@ -60,6 +60,24 @@ public class Player {
         return accuracyBonusPerLevel * (level - 1);
     }
 
+    public double getConditionAccuracyPenalty() {
+        double penalty = 0.0;
+
+        if (hunger <= 0) {
+            penalty += 0.20;
+        } else if (hunger < 25) {
+            penalty += 0.10;
+        }
+
+        if (energy <= 0) {
+            penalty += 0.20;
+        } else if (energy < 25) {
+            penalty += 0.10;
+        }
+
+        return penalty;
+    }
+
     public void addFood(int amount) {
         foodCount += amount;
         if (foodCount > 15) {
@@ -295,5 +313,9 @@ public class Player {
         System.out.println("Helmet: " + helmet.getHitsRemaining() + "/" + helmet.getMaxHits() +
                 " | Armor: " + bodyArmor.getHitsRemaining() + "/" + bodyArmor.getMaxHits());
         System.out.println("Level: " + level + " | Kills: " + kills);
+        if (getConditionAccuracyPenalty() > 0) {
+            System.out.println("Combat penalty: -" + String.format("%.0f", getConditionAccuracyPenalty() * 100)
+                    + "% accuracy from hunger/energy.");
+        }
     }
 }
