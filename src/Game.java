@@ -500,16 +500,6 @@ public class Game {
         player.drainEnergy(-restored);
         System.out.println("Energy restored! +" + restored + " energy.");
 
-        // More war rounds on harder difficulty
-        warRages(true);
-        warRages(true);
-        if (choice >= 2) {
-            warRages(true);
-        }
-        if (choice == 3) {
-            warRages(true);
-        }
-
         // Explosion chance scales with difficulty
         double explosionChance = choice == 1 ? 0.20 : choice == 2 ? 0.35 : 0.50;
         if (Math.random() < explosionChance) {
