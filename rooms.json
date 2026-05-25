@@ -136,7 +136,7 @@
 
 "type": "bunker",
 
-"enemyChance": 0.2
+"enemyChance": 0.05
   },
    "bunker2": {
       "name": "Bunker",
@@ -148,7 +148,7 @@
 
 "type": "bunker",
 
-"enemyChance": 0.2
+"enemyChance": 0.05
   },
    "bunker3": {
       "name": "Bunker",
@@ -160,6 +160,6 @@
 
 "type": "bunker",
 
-"enemyChance": 0.2
+"enemyChance": 0.05
   }
 }
