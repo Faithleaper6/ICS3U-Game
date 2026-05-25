@@ -170,6 +170,9 @@ public class Game {
 
         if (inBunker) {
             Bunker.search(player);
+        } else if (tryRescueAlly(currentRoom)) {
+            System.out.println("\nYou search the trench and pull a wounded ally back into cover.");
+            player.awardBadge("Rescuer", "saved an ally under battlefield pressure");
         } else if (!currentRoom.getItems().isEmpty()) {
             System.out.println("\nYou search the area and find:");
             for (RoomItem item : currentRoom.getItems()) {
@@ -337,6 +340,7 @@ public class Game {
             if (!target.isAlive()) {
                 System.out.println("  Enemy " + target.getType() + " eliminated!");
                 player.addKill();
+                player.awardBadge("Grenadier", "eliminated an enemy with a grenade");
                 removeVisibleEnemy(room);
             }
         }
@@ -527,6 +531,13 @@ public class Game {
                 targetIndex--;
             }
         }
+    }
+
+    private boolean tryRescueAlly(Room room) {
+        if (room == null || room.getType().equals("bunker")) {
+            return false;
+        }
+        return Math.random() < 0.12 && countAliveAllies() > 0;
     }
 
     public void sleep() {

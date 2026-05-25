@@ -1,3 +1,6 @@
+import java.util.HashSet;
+import java.util.Set;
+
 public class Player {
     private String name;
     private int health, maxHealth;
@@ -14,7 +17,9 @@ public class Player {
     private int foodCount, waterCount, medkitCount;
     private int grenades;
     private int kills;
+    private int killStreak;
     private int level;
+    private Set<String> badges;
 
     private double lootBonusPerLevel;
     private double accuracyBonusPerLevel;
@@ -42,7 +47,9 @@ public class Player {
         this.medkitCount = 1;
         this.grenades = 3;
         this.kills = 0;
+        this.killStreak = 0;
         this.level = 1;
+        this.badges = new HashSet<>();
         this.lootBonusPerLevel = 0.03;
         this.accuracyBonusPerLevel = 0.03;
         this.currentroomid = "trench5";
@@ -190,6 +197,7 @@ public class Player {
             health = 0;
         }
         System.out.println("  >> You took " + actualDamage + " damage! Health: " + health + "/" + maxHealth);
+        killStreak = 0;
     }
 
     public void kill() {
@@ -264,6 +272,13 @@ public class Player {
 
     public void addKill() {
         kills++;
+        killStreak++;
+        if (killStreak == 3) {
+            awardBadge("Killing Streak", "eliminated 3 enemies without taking damage");
+        }
+        if (kills == 5 && health >= 80) {
+            awardBadge("Steady Nerves", "reached 5 kills while staying above 80 health");
+        }
         int newLevel = 1 + kills / 3;
         if (newLevel > level) {
             level = newLevel;
@@ -277,6 +292,34 @@ public class Player {
 
     public int getLevel() {
         return level;
+    }
+
+    public void awardBadge(String badgeName, String reason) {
+        if (badges.add(badgeName)) {
+            System.out.println("  >> Badge earned: " + badgeName + " (" + reason + ")");
+            grantBadgeReward(badgeName);
+        }
+    }
+
+    private void grantBadgeReward(String badgeName) {
+        if (badgeName.equals("Killing Streak")) {
+            addMagsToCurrentWeapon(1);
+            System.out.println("  >> Badge reward: +1 magazine for your current weapon.");
+        } else if (badgeName.equals("Steady Nerves")) {
+            addMedkit(1);
+            System.out.println("  >> Badge reward: +1 medkit.");
+        } else if (badgeName.equals("Grenadier")) {
+            addGrenades(1);
+            System.out.println("  >> Badge reward: +1 grenade.");
+        } else if (badgeName.equals("Rescuer")) {
+            addFood(1);
+            addWater(1);
+            System.out.println("  >> Badge reward: +1 food and +1 water.");
+        }
+    }
+
+    private void addMagsToCurrentWeapon(int mags) {
+        getCurrentWeapon().addMags(mags);
     }
 
     public boolean isAlive() {
@@ -313,6 +356,11 @@ public class Player {
         System.out.println("Helmet: " + helmet.getHitsRemaining() + "/" + helmet.getMaxHits() +
                 " | Armor: " + bodyArmor.getHitsRemaining() + "/" + bodyArmor.getMaxHits());
         System.out.println("Level: " + level + " | Kills: " + kills);
+        if (badges.isEmpty()) {
+            System.out.println("Badges: none yet");
+        } else {
+            System.out.println("Badges: " + String.join(", ", badges));
+        }
         if (getConditionAccuracyPenalty() > 0) {
             System.out.println("Combat penalty: -" + String.format("%.0f", getConditionAccuracyPenalty() * 100)
                     + "% accuracy from hunger/energy.");
