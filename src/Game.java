@@ -233,6 +233,17 @@ public class Game {
     }
 
     public void magDump() {
+        Room currentRoom = rooms.get(player.getCurrentRoomId());
+        if (currentRoom.getType().equals("bunker")) {
+            System.out.println("You can't shoot from inside the bunker! Go back to the trench first.");
+            return;
+        }
+
+        if (activeEnemies <= 0) {
+            System.out.println("No enemies in sight right now. Advance time or move to spot targets.");
+            return;
+        }
+
         Weapon weapon = player.getCurrentWeapon();
         if (!weapon.isFullAuto()) {
             System.out.println("Only the Thompson SMG can magdump.");
@@ -256,6 +267,10 @@ public class Game {
                 if (!target.isAlive()) {
                     System.out.println("  Enemy " + target.getType() + " eliminated!");
                     player.addKill();
+                    activeEnemies--;
+                    if (activeEnemies < 0) {
+                        activeEnemies = 0;
+                    }
                 }
             }
         }
